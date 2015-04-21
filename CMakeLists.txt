@@ -7,7 +7,7 @@
 #
  
 cmake_minimum_required (VERSION 2.8.2) 
-project (ExampleVR)
+project (MinVRExtensions)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{MinVR_DIR}/cmake/modules")
 
@@ -50,12 +50,6 @@ set (CMAKE_VERBOSE_MAKEFILE TRUE)
 include_directories (
   .
   ..
-  ${ExampleVR_SOURCE_DIR}/example/include
-)
-
-# If you want to add any link directories you can add them here
-link_directories (
-  ${ExampleVR_BINARY_DIR}
 )
 
 ############################################################
@@ -95,7 +89,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 	find_package(Threads)
 	find_package(X11)
-	set(LIBS_ALL ${LIBS_ALL} ${CMAKE_THREAD_LIBS_INIT} rt Xrandr Xxf86vm Xi m ${X11_LIBRARIES})
+	set(LIBS_ALL ${LIBS_ALL} ${CMAKE_THREAD_LIBS_INIT} rt Xrandr Xxf86vm Xi m dl ${X11_LIBRARIES})
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -137,28 +131,9 @@ endif()
 #Finally add all the targets here
 ############################################################
 
-#First an example of executable target
-add_executable(example ${HEADERFILES} ${SOURCEFILES})
-#All of libs should be added here
-#If its a debug-only lib specify it as "debug <libtoadd>"
-#If its a opt-only lib specify it as "optimized <libtoadd>"
-#<libtoadd> should either be a full path to the lib, or the OS
-#indepdent way it would appear in the command line (i.e. -l<libtoadd>)
-#If the second is way is used you need to sure the directory the lib is
-#in will be found
-target_link_libraries (example ${MinVR_LIBRARIES} ${LIBS_DEBUG} ${LIBS_OPT} ${LIBS_ALL})
-
-#Second an example of a library target
-#It should default to making a static library
-add_library(examplevr ${HEADERFILES} ${SOURCEFILES})
-
 #You can also add subprojects that are in subdirectories
 #These subdirectories must contain their own CMakeLists.txt
-#add_subdirectory (mysubproject)
 
-install(DIRECTORY example/include/ DESTINATION include)
+add_subdirectory (test/MinVR_Test)
 
-install( TARGETS examplevr example
-         LIBRARY DESTINATION lib
-         ARCHIVE DESTINATION lib
-         RUNTIME DESTINATION bin)
+
