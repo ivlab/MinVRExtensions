@@ -8,16 +8,22 @@
 
 #include "framework/plugin/Plugin.h"
 #include "log/Logger.h"
+#include "TuioDeviceDriver.h"
 
 namespace MinVR {
 
-class TestPlugin : public MinVR::framework::plugin::Plugin {
+using namespace MinVR::framework;
+using namespace MinVR::framework::plugin;
+
+class TUIOPlugin : public MinVR::framework::plugin::Plugin {
 public:
-	TestPlugin() {}
-	virtual ~TestPlugin() {}
+	TUIOPlugin() {}
+	virtual ~TUIOPlugin() {}
 	bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
 	{
-		MinVR::Logger::getInstance().log("Registering Test Plugin", "TestPlugin", "plugin");
+		MinVR::Logger::getInstance().log("Registering TUIO Plugin", "TUIOPlugin", "plugin");
+		interface->addInputDeviceDriver(InputDeviceDriverRef(new TuioDeviceDriver()));
+		MinVR::Logger::getInstance().log("Registering TUIO Plugin Complete", "TUIOPlugin", "plugin");
 		return true;
 	}
 };
@@ -28,6 +34,6 @@ public:
 extern "C"
 {
 	MinVR::framework::plugin::PluginRef loadPlugin() {
-		return MinVR::framework::plugin::PluginRef(new MinVR::TestPlugin());
+		return MinVR::framework::plugin::PluginRef(new MinVR::TUIOPlugin());
 	}
 }

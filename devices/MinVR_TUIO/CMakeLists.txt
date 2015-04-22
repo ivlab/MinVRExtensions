@@ -1,24 +1,62 @@
 cmake_minimum_required (VERSION 2.8.2)
 set (CMAKE_VERBOSE_MAKEFILE TRUE)
 
-project (MinVR_Test)
+project (MinVR_TUIO)
 
 #------------------------------------------
 # Define the source and header files
 #------------------------------------------
 
 set (SOURCEFILES
-TestPlugin.cpp
+TUIOPlugin.cpp
+InputDeviceTUIOClient.cpp
+TuioDeviceDriver.cpp
 )
 
 set (HEADERFILES
+InputDeviceTUIOClient.H
+TuioDeviceDriver.h
 )
+
+add_definitions(-DUSE_TUIO)
 
 source_group("Header Files" FILES ${HEADERFILES})
 
 #------------------------------------------
 # Download dependencies
 #------------------------------------------
+
+	set(tuio_checkout_Dir ${PROJECT_SOURCE_DIR}/tuio)
+	make_directory(${tuio_checkout_Dir})
+    message("   Library will be built from source in ${tuio_checkout_Dir}.")
+	include(ExternalProject)
+	set(tuio_PREFIX "${tuio_checkout_Dir}")
+	set(tuio_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}")
+	set(tuio_CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${tuio_INSTALL_DIR}")
+	set(tuio_DIR "${tuio_INSTALL_DIR}")
+	set(tuio_PATCH ${CMAKE_COMMAND} -E copy ${tuio_checkout_Dir}/CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt && ${CMAKE_COMMAND} -E copy ${tuio_checkout_Dir}/TuioServer.cpp <SOURCE_DIR>/TUIO/TuioServer.cpp)
+
+	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+		set(tuio_CMAKE_ARGS ${tuio_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD=c++11 -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY=libc++)
+	endif()
+
+	ExternalProject_add(TUIO
+			PREFIX ${tuio_PREFIX}
+			URL http://prdownloads.sourceforge.net/reactivision/TUIO_CPP-1.4.zip
+			INSTALL_DIR ${tuio_INSTALL_DIR}
+			CMAKE_ARGS ${tuio_CMAKE_ARGS}
+			PATCH_COMMAND ${tuio_PATCH}
+			UPDATE_COMMAND ""
+	 )		 
+	set_property(TARGET TUIO PROPERTY FOLDER "Dependencies")
+	set(TUIO_INCLUDE_DIR ${tuio_INSTALL_DIR}/include CACHE INTERNAL "Directory of TUIO header files")
+	if(MSVC)
+		set(TUIO_LIBRARY ${tuio_INSTALL_DIR}/lib/TUIO.dll CACHE INTERNAL "TUIO lib file")
+	else()
+		set(TUIO_LIBRARY ${tuio_INSTALL_DIR}/lib/libTUIO.so CACHE INTERNAL "TUIO lib file")
+	endif()
+	set(LIBS_ALL ${LIBS_ALL} ${TUIO_LIBRARY})
+	include_directories(${TUIO_INCLUDE_DIR})
 
 #------------------------------------------
 # Include Directories
