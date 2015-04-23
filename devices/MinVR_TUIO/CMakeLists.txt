@@ -106,13 +106,18 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 #------------------------------------------
 # Build Target
 #------------------------------------------
+SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
 if(USE_BOOST)
-	add_dependencies(${PROJECT_NAME} boost MVRCore)
+	add_dependencies(${PROJECT_NAME} boost TUIO MVRCore)
 else()
-	add_dependencies(${PROJECT_NAME} MVRCore)
+	add_dependencies(${PROJECT_NAME} TUIO MVRCore)
 endif()
-
+target_link_libraries(${PROJECT_NAME} ${TUIO_LIBRARY})
 
 #------------------------------------------
 # Install Target
