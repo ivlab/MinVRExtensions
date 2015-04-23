@@ -22,7 +22,7 @@ public:
 	bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
 	{
 		MinVR::Logger::getInstance().log("Registering TUIO Plugin", "TUIOPlugin", "plugin");
-		interface->addInputDeviceDriver(InputDeviceDriverRef(new TuioDeviceDriver()));
+		interface->getInterface<MinVRInterface>()->addInputDeviceDriver(InputDeviceDriverRef(new TuioDeviceDriver()));
 		MinVR::Logger::getInstance().log("Registering TUIO Plugin Complete", "TUIOPlugin", "plugin");
 		return true;
 	}
