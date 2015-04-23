@@ -1,3 +1,11 @@
+#
+# Copyright Regents of the University of Minnesota, 2014.  This software is released under the following license: http://opensource.org/licenses/GPL-2.0.
+# Source code originally developed at the University of Minnesota Interactive Visualization Lab (http://ivlab.cs.umn.edu).
+#
+# Code author(s):
+# 		Dan Orban (dtorban)
+#
+
 cmake_minimum_required (VERSION 2.8.2)
 set (CMAKE_VERBOSE_MAKEFILE TRUE)
 
@@ -127,3 +135,5 @@ install( TARGETS ${PROJECT_NAME}
          LIBRARY DESTINATION ${PROJECT_NAME}/lib
          ARCHIVE DESTINATION ${PROJECT_NAME}/lib
          RUNTIME DESTINATION ${PROJECT_NAME}/bin)
+         
+install(FILES ${PROJECT_SOURCE_DIR}/LICENSE.txt DESTINATION "${PROJECT_NAME}/")
