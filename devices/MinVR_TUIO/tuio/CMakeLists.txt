@@ -39,6 +39,7 @@ endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++11") 
   add_definitions("-DOSC_HOST_LITTLE_ENDIAN")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
@@ -50,7 +51,7 @@ endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 #Finally add all the targets here
 ############################################################
 
-add_library(TUIO SHARED ${SOURCEFILES})
+add_library(TUIO ${SOURCEFILES})
 
 install(DIRECTORY ${CMAKE_BINARY_DIR}/ DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/TUIO/ DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
