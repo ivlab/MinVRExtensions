@@ -47,6 +47,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef VRPNANALOGDEVICE_H
 #define VRPNANALOGDEVICE_H
 
+#ifdef WIN32
+#define NOMINMAX
+#endif
+
 // Note: This include ordering is important, don't screw with it!
 #include <glm/glm.hpp>
 #include <vector>

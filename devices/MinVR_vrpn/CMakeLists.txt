@@ -78,7 +78,7 @@ add_definitions(-DUSE_VRPN)
 include_directories (
   .
 )
-#${MinVR_INCLUDE_DIRS}
+# ${MinVR_INCLUDE_DIRS}
 
 #------------------------------------------
 # Specific preprocessor defines
@@ -131,7 +131,7 @@ if(USE_BOOST)
 else()
 	add_dependencies(${PROJECT_NAME} vrpn MVRCore)
 endif()
-target_link_libraries(${PROJECT_NAME} ${VRPN_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${MinVR_LIBRARIES} ${VRPN_LIBRARY})
 
 #------------------------------------------
 # Install Target

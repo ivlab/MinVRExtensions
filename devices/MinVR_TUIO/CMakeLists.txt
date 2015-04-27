@@ -59,7 +59,7 @@ source_group("Header Files" FILES ${HEADERFILES})
 	set_property(TARGET TUIO PROPERTY FOLDER "Dependencies")
 	set(TUIO_INCLUDE_DIR ${tuio_INSTALL_DIR}/include CACHE INTERNAL "Directory of TUIO header files")
 	if(MSVC)
-		set(TUIO_LIBRARY ${tuio_INSTALL_DIR}/lib/TUIO.dll CACHE INTERNAL "TUIO lib file")
+		set(TUIO_LIBRARY ${tuio_INSTALL_DIR}/lib/TUIO.lib CACHE INTERNAL "TUIO lib file")
 	else()
 		set(TUIO_LIBRARY ${tuio_INSTALL_DIR}/lib/libTUIO.a CACHE INTERNAL "TUIO lib file")
 	endif()
@@ -72,7 +72,6 @@ source_group("Header Files" FILES ${HEADERFILES})
 include_directories (
   .
 )
-#${MinVR_INCLUDE_DIRS}
 
 #------------------------------------------
 # Specific preprocessor defines
@@ -125,7 +124,7 @@ if(USE_BOOST)
 else()
 	add_dependencies(${PROJECT_NAME} TUIO MVRCore)
 endif()
-target_link_libraries(${PROJECT_NAME} ${TUIO_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${MinVR_LIBRARIES} ${TUIO_LIBRARY} winmm.lib wininet.lib ws2_32.lib)
 
 #------------------------------------------
 # Install Target

@@ -74,7 +74,7 @@ if(USE_BOOST)
 else()
 	add_dependencies(${PROJECT_NAME} MVRCore)
 endif()
-
+target_link_libraries(${PROJECT_NAME} ${MinVR_LIBRARIES})
 
 #------------------------------------------
 # Install Target

@@ -9,12 +9,6 @@
 #include "framework/plugin/Plugin.h"
 #include "log/Logger.h"
 
-#if defined(WIN32)
-#define PLUGIN_API __declspec(dllexport)
-#else
-#define PLUGIN_API
-#endif
-
 namespace MinVR {
 
 class TestPlugin : public MinVR::framework::plugin::Plugin {
@@ -33,7 +27,7 @@ public:
 
 extern "C"
 {
-	PLUGIN_API MinVR::framework::plugin::PluginRef loadPlugin() {
-		return MinVR::framework::plugin::PluginRef(new MinVR::TestPlugin());
+	PLUGIN_API MinVR::framework::plugin::Plugin* loadPlugin() {
+		return new MinVR::TestPlugin();
 	}
 }

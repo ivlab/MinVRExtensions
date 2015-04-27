@@ -16,7 +16,6 @@
 #include  <TuioClient.h>
 #endif
 
-
 #include "framework/InputDevice.h"
 #include "MVRCore/ConfigMap.H"
 #include "MVRCore/Event.H"

@@ -34,7 +34,7 @@ public:
 
 extern "C"
 {
-	PLUGIN_API MinVR::framework::plugin::PluginRef loadPlugin() {
-		return MinVR::framework::plugin::PluginRef(new MinVR::VrpnPlugin());
+	PLUGIN_API MinVR::framework::plugin::Plugin* loadPlugin() {
+		return new MinVR::VrpnPlugin();
 	}
 }
