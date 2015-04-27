@@ -11,15 +11,16 @@
 #define VRPNDEVICEFACTORY_H_
 
 #include "framework/InputDevice.h"
+#include "framework/plugin/PluginFramework.h"
 
 namespace MinVR {
 
 class VrpnDeviceDriver : public MinVR::framework::InputDeviceDriver {
 public:
-	VrpnDeviceDriver();
-	virtual ~VrpnDeviceDriver();
+	PLUGIN_API VrpnDeviceDriver();
+	PLUGIN_API virtual ~VrpnDeviceDriver();
 
-	MinVR::framework::InputDeviceRef create(const std::string &type, const std::string& name, ConfigMapRef config);
+	PLUGIN_API MinVR::framework::InputDeviceRef create(const std::string &type, const std::string& name, ConfigMapRef config);
 };
 
 } /* namespace MinVR */

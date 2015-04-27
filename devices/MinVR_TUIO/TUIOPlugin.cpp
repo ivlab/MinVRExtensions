@@ -17,9 +17,9 @@ using namespace MinVR::framework::plugin;
 
 class TUIOPlugin : public MinVR::framework::plugin::Plugin {
 public:
-	TUIOPlugin() {}
-	virtual ~TUIOPlugin() {}
-	bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
+	PLUGIN_API TUIOPlugin() {}
+	PLUGIN_API virtual ~TUIOPlugin() {}
+	PLUGIN_API bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
 	{
 		MinVR::Logger::getInstance().log("Registering TUIO Plugin", "TUIOPlugin", "plugin");
 		interface->getInterface<MinVRInterface>()->addInputDeviceDriver(InputDeviceDriverRef(new TuioDeviceDriver()));
@@ -33,7 +33,7 @@ public:
 
 extern "C"
 {
-	MinVR::framework::plugin::PluginRef loadPlugin() {
+	PLUGIN_API MinVR::framework::plugin::PluginRef loadPlugin() {
 		return MinVR::framework::plugin::PluginRef(new MinVR::TUIOPlugin());
 	}
 }

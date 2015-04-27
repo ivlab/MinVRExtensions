@@ -57,6 +57,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/Time.h"
 
 #include <log/Logger.h>
+#include "framework/plugin/PluginFramework.h"
 
 #ifdef USE_VRPN
 class vrpn_Analog_Remote;
@@ -71,15 +72,15 @@ class InputDeviceVRPNAnalog : public MinVR::framework::InputDevice
 public:
 
 #ifdef USE_VRPN
-	InputDeviceVRPNAnalog(const std::string &vrpnAnalogDeviceName, const std::vector<std::string> &eventsToGenerate);
-	InputDeviceVRPNAnalog(const std::string name, const ConfigMapRef map);
+	PLUGIN_API InputDeviceVRPNAnalog(const std::string &vrpnAnalogDeviceName, const std::vector<std::string> &eventsToGenerate);
+	PLUGIN_API InputDeviceVRPNAnalog(const std::string name, const ConfigMapRef map);
 
-	virtual ~InputDeviceVRPNAnalog();
+	PLUGIN_API virtual ~InputDeviceVRPNAnalog();
 
-	void        pollForInput(std::vector<EventRef> &events);
-	void        sendEventIfChanged(int channelNumber, double data, const TimeStamp &msg_time);
-	std::string getEventName(int channelNumber);
-	size_t         numChannels() { return _eventNames.size(); }
+	PLUGIN_API void        pollForInput(std::vector<EventRef> &events);
+	PLUGIN_API void        sendEventIfChanged(int channelNumber, double data, const TimeStamp &msg_time);
+	PLUGIN_API std::string getEventName(int channelNumber);
+	PLUGIN_API size_t         numChannels() { return _eventNames.size(); }
 
 private:
 	vrpn_Analog_Remote  *_vrpnDevice;
@@ -87,17 +88,17 @@ private:
 	std::vector<double>        _channelValues;
 	std::vector<EventRef>      _pendingEvents;
 #else
-	InputDeviceVRPNAnalog(const std::string &vrpnAnalogDeviceName, const std::vector<std::string> &eventsToGenerate)
+	PLUGIN_API InputDeviceVRPNAnalog(const std::string &vrpnAnalogDeviceName, const std::vector<std::string> &eventsToGenerate)
 	{
 		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
-	InputDeviceVRPNAnalog(const std::string name, const ConfigMapRef map)
+	PLUGIN_API InputDeviceVRPNAnalog(const std::string name, const ConfigMapRef map)
 	{
 		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 
-	virtual ~InputDeviceVRPNAnalog() {};
-	void pollForInput(std::vector<EventRef> &events) {};
+	PLUGIN_API virtual ~InputDeviceVRPNAnalog() {};
+	PLUGIN_API void pollForInput(std::vector<EventRef> &events) {};
 #endif
 };
 

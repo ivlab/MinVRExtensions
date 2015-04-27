@@ -23,6 +23,7 @@
 #include <vector>
 #include <unordered_set>
 #include <log/Logger.h>
+#include "framework/plugin/PluginFramework.h"
 
 
 
@@ -35,11 +36,11 @@ class InputDeviceTUIOClient : public MinVR::framework::InputDevice
 public:
 
 #ifdef USE_TUIO
-	InputDeviceTUIOClient(int port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 );
-	InputDeviceTUIOClient( const std::string name, const ConfigMapRef map );
-	virtual ~InputDeviceTUIOClient();
+	PLUGIN_API InputDeviceTUIOClient(int port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 );
+	PLUGIN_API InputDeviceTUIOClient( const std::string name, const ConfigMapRef map );
+	PLUGIN_API virtual ~InputDeviceTUIOClient();
 	
-	void pollForInput( std::vector<EventRef>  &events );
+	PLUGIN_API void pollForInput( std::vector<EventRef>  &events );
 
 
 private:
@@ -49,18 +50,18 @@ private:
 	double      _yScale;
 
 #else
-	InputDeviceTUIOClient(int port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 )
+	PLUGIN_API InputDeviceTUIOClient(int port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 )
 	{
 		MinVR::Logger::getInstance().assertMessage(false, "TUIO is currently unsupported. Set cmake option USE_TUIO to ON and recompile.");
 	}
 
-	InputDeviceTUIOClient( const std::string name, const ConfigMapRef map )
+	PLUGIN_API InputDeviceTUIOClient( const std::string name, const ConfigMapRef map )
 	{
 		MinVR::Logger::getInstance().assertMessage(false, "TUIO is currently unsupported. Set cmake option USE_TUIO to ON and recompile.");
 	}
 
-	virtual ~InputDeviceTUIOClient() {}
-	void pollForInput( std::vector<EventRef> &events) {}
+	PLUGIN_API virtual ~InputDeviceTUIOClient() {}
+	PLUGIN_API void pollForInput( std::vector<EventRef> &events) {}
 
 
 #endif                   // USE_TUIO

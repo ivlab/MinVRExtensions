@@ -9,6 +9,7 @@
 #include "framework/plugin/Plugin.h"
 #include "log/Logger.h"
 #include "VrpnDeviceDriver.h"
+#include "framework/plugin/PluginFramework.h"
 
 namespace MinVR {
 
@@ -17,9 +18,9 @@ using namespace MinVR::framework::plugin;
 
 class VrpnPlugin : public MinVR::framework::plugin::Plugin {
 public:
-	VrpnPlugin() {}
-	virtual ~VrpnPlugin() {}
-	bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
+	PLUGIN_API VrpnPlugin() {}
+	PLUGIN_API virtual ~VrpnPlugin() {}
+	PLUGIN_API bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
 	{
 		MinVR::Logger::getInstance().log("Registering vrpn Plugin", "TUIOPlugin", "plugin");
 		interface->getInterface<MinVRInterface>()->addInputDeviceDriver(InputDeviceDriverRef(new VrpnDeviceDriver()));
@@ -33,7 +34,7 @@ public:
 
 extern "C"
 {
-	MinVR::framework::plugin::PluginRef loadPlugin() {
+	PLUGIN_API MinVR::framework::plugin::PluginRef loadPlugin() {
 		return MinVR::framework::plugin::PluginRef(new MinVR::VrpnPlugin());
 	}
 }

@@ -9,6 +9,7 @@
 
 #include <TuioDeviceDriver.h>
 #include "InputDeviceTUIOClient.H"
+#include "framework/plugin/PluginFramework.h"
 
 namespace MinVR {
 

@@ -12,6 +12,7 @@
 #include "MVRCore/StringUtils.H"
 #include "MVRCore/ConfigMap.H"
 #include <list>
+#include "framework/plugin/PluginFramework.h"
 
 namespace MinVR {
 

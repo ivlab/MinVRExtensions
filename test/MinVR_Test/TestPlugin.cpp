@@ -9,13 +9,19 @@
 #include "framework/plugin/Plugin.h"
 #include "log/Logger.h"
 
+#if defined(WIN32)
+#define PLUGIN_API __declspec(dllexport)
+#else
+#define PLUGIN_API
+#endif
+
 namespace MinVR {
 
 class TestPlugin : public MinVR::framework::plugin::Plugin {
 public:
-	TestPlugin() {}
-	virtual ~TestPlugin() {}
-	bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
+	PLUGIN_API TestPlugin() {}
+	PLUGIN_API virtual ~TestPlugin() {}
+	PLUGIN_API bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
 	{
 		MinVR::Logger::getInstance().log("Registering Test Plugin", "TestPlugin", "plugin");
 		return true;
@@ -27,7 +33,7 @@ public:
 
 extern "C"
 {
-	MinVR::framework::plugin::PluginRef loadPlugin() {
+	PLUGIN_API MinVR::framework::plugin::PluginRef loadPlugin() {
 		return MinVR::framework::plugin::PluginRef(new MinVR::TestPlugin());
 	}
 }
