@@ -37,6 +37,7 @@ if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	# Tell MSVC to use main instead of WinMain for Windows subsystem executables
     set_target_properties(${WINDOWS_BINARIES} PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
+	set(All_LIB ${MinVR_LIBRARIES})
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -74,7 +75,7 @@ if(USE_BOOST)
 else()
 	add_dependencies(${PROJECT_NAME} MVRCore)
 endif()
-target_link_libraries(${PROJECT_NAME} ${MinVR_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${All_LIB})
 
 #------------------------------------------
 # Install Target

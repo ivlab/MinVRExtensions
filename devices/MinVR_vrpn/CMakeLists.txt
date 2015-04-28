@@ -65,6 +65,7 @@ add_definitions(-DUSE_VRPN)
 		set(VRPN_INCLUDE_DIR ${vrpn_INSTALL_DIR}/include CACHE INTERNAL "Directory of VRPN header files")
 		if(MSVC)
 			set(VRPN_LIBRARY ${vrpn_INSTALL_DIR}/lib/vrpn.lib CACHE INTERNAL "VRPN lib file")
+			set(All_LIB ${MinVR_LIBRARIES})
 		else()
 			set(VRPN_LIBRARY ${vrpn_INSTALL_DIR}/lib/libvrpn.a CACHE INTERNAL "VRPN lib file")
 		endif()	
@@ -131,7 +132,7 @@ if(USE_BOOST)
 else()
 	add_dependencies(${PROJECT_NAME} vrpn MVRCore)
 endif()
-target_link_libraries(${PROJECT_NAME} ${MinVR_LIBRARIES} ${VRPN_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${VRPN_LIBRARY} ${All_LIB})
 
 #------------------------------------------
 # Install Target
