@@ -43,7 +43,7 @@ add_definitions(-DUSE_VRPN)
         message("   Library will be built from source in ${vrpn_checkout_Dir}.")
 		include(ExternalProject)
 		set(vrpn_PREFIX "${vrpn_checkout_Dir}")
-		set(vrpn_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}")
+		set(vrpn_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/vrpn")
 		set(vrpn_CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${vrpn_INSTALL_DIR} -DVRPN_BUILD_DIRECTSHOW_VIDEO_SERVER=OFF -DVRPN_BUILD_HID_GUI=OFF -DVRPN_BUILD_JAVA=OFF -DVRPN_BUILD_PYTHON=OFF -DVRPN_USE_DIRECTINPUT=OFF -DVRPN_USE_DIRECTSHOW=OFF)
 		set(vrpn_DIR "${vrpn_INSTALL_DIR}")
 
