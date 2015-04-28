@@ -53,7 +53,15 @@ endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 add_library(TUIO ${SOURCEFILES})
 
-install(DIRECTORY ${CMAKE_BINARY_DIR}/ DESTINATION "${CMAKE_INSTALL_PREFIX}/lib")
+#------------------------------------------
+# Install Target
+#------------------------------------------
+
+install( TARGETS ${PROJECT_NAME}
+         LIBRARY DESTINATION ${PROJECT_NAME}/lib
+         ARCHIVE DESTINATION ${PROJECT_NAME}/lib
+         RUNTIME DESTINATION ${PROJECT_NAME}/bin)
+
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/TUIO/ DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/oscpack/ip DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/oscpack/osc DESTINATION "${CMAKE_INSTALL_PREFIX}/include")
