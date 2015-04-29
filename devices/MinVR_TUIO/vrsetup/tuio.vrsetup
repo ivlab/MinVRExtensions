@@ -5,7 +5,7 @@ Description           A standard non-VR desktop window
 
 # Name of a configuration file for input devices (leave blank
 # for no devices other than keyboard and mouse)
-InputDevicesFile      desktop-devices.cfg
+InputDevicesFile      tuio-devices.cfg
 
 Plugins+= MinVR_TUIO
 
