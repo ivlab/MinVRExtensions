@@ -12,7 +12,7 @@ project (MinVRExtensions)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{MinVR_DIR}/cmake/modules")
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/../install" CACHE PATH "default install path" FORCE )
+    set (CMAKE_INSTALL_PREFIX "$ENV{MinVR_DIR}/plugins" CACHE PATH "default install path" FORCE )
 endif()
 
 #This way will auto detect all source files in the directory,
@@ -23,10 +23,9 @@ endif()
 #aux_source_directory(${CMAKE_SOURCE_DIR} SOURCEFILES})
 #This is how you specific source file individually
 set (SOURCEFILES 
-		example/source/main.cpp
-		example/source/ExampleVrApp.cpp)
+)
 set (HEADERFILES 
-		example/include/ExampleVrApp.h)
+)
 source_group("Header Files" FILES ${HEADERFILES})
 
 ############################################################
