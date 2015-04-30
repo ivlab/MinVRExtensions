@@ -66,6 +66,8 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 	std::list<TuioCursor*> cursorList = _tuioClient->getTuioCursors();
 	//_tuioClient->lockCursorList();
 
+	std::list<int> toErase;
+
 	// Send "button" up events for cursors that were down last frame, but are now up.
 	for ( auto downLast_it = _cursorsDown.begin(); downLast_it!= _cursorsDown.end(); ++downLast_it ) {
 		bool stillDown = false;
@@ -76,9 +78,13 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 			}
 		}
 		if (!stillDown) {
-			events.push_back(EventRef(new Event("TUIO_Cursor" + intToString(*downLast_it) + "_up", nullptr, *downLast_it)));
-			_cursorsDown.erase (downLast_it);
+			events.push_back(EventRef(new Event("TUIO_Cursor_up" + intToString(*downLast_it), nullptr, *downLast_it)));
+			toErase.push_back(*downLast_it);
 		}
+	}
+
+	for (std::list<int>::iterator iter = toErase.begin(); iter != toErase.end(); iter++) {
+		_cursorsDown.erase(*iter);
 	}
 
 	// Send "button" down events for cursors that are new and updated positions for all cursors
@@ -86,8 +92,8 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 		TuioCursor *tcur = (*iter);
 		glm::dvec2 pos = glm::dvec2(_xScale*tcur->getX(), _yScale*tcur->getY());
 
-		if (_cursorsDown.find(tcur->getCursorID()) != _cursorsDown.end()) {
-			events.push_back(EventRef(new Event("TUIO_Cursor" + intToString(tcur->getCursorID()) + "_down", pos, nullptr, tcur->getCursorID())));
+		if (_cursorsDown.find(tcur->getCursorID()) == _cursorsDown.end()) {
+			events.push_back(EventRef(new Event("TUIO_Cursor_down" + intToString(tcur->getCursorID()), pos, nullptr, tcur->getCursorID())));
 			_cursorsDown.insert(tcur->getCursorID());
 		}
 
