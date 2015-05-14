@@ -42,5 +42,8 @@ Session.vim
 *.out
 *.app
 
+# X-code
+*.DS_STORE
+
 # Other
 log.txt

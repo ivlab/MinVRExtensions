@@ -95,6 +95,7 @@ endif()
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
 	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
+    set(All_LIB ${MinVR_LIBRARIES})
 endif()
 
 #------------------------------------------
