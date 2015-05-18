@@ -12,7 +12,7 @@ Plugins+= MinVR_TUIO
 InterOcularDistance		0.2083
 InitialHeadFrame		((1,0,0,0), (0,1,0,0), (0,0,1,1), (0,0,0,1))
 
-NumWindows				2
+NumWindows				1
 
 Window1_Width           600
 Window1_Height          600

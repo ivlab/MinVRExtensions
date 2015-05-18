@@ -78,7 +78,7 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 			}
 		}
 		if (!stillDown) {
-			events.push_back(EventRef(new Event("TUIO_Cursor_up" + intToString(*downLast_it), nullptr, *downLast_it)));
+			events.push_back(EventRef(new Event("Touch_Cursor_Up" + intToString(*downLast_it), nullptr, *downLast_it)));
 			toErase.push_back(*downLast_it);
 		}
 	}
@@ -93,13 +93,13 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 		glm::dvec2 pos = glm::dvec2(_xScale*tcur->getX(), _yScale*tcur->getY());
 
 		if (_cursorsDown.find(tcur->getCursorID()) == _cursorsDown.end()) {
-			events.push_back(EventRef(new Event("TUIO_Cursor_down" + intToString(tcur->getCursorID()), pos, nullptr, tcur->getCursorID())));
+			events.push_back(EventRef(new Event("Touch_Cursor_Down" + intToString(tcur->getCursorID()), pos, nullptr, tcur->getCursorID())));
 			_cursorsDown.insert(tcur->getCursorID());
 		}
 
 		if (tcur->getMotionSpeed() > 0.0) {
 			glm::dvec4 data = glm::dvec4(pos, tcur->getMotionSpeed(), tcur->getMotionAccel());
-			events.push_back(EventRef(new Event("TUIO_CursorMove" + intToString(tcur->getCursorID()), data, nullptr, tcur->getCursorID())));
+			events.push_back(EventRef(new Event("Touch_Cursor_Move" + intToString(tcur->getCursorID()), data, nullptr, tcur->getCursorID())));
 		}
 
 		// Can also access several other properties of cursors (speed, acceleration, path followed, etc.)
