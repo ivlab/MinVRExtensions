@@ -81,6 +81,10 @@ include_directories (
 )
 # ${MinVR_INCLUDE_DIRS}
 
+if(USE_BOOST)
+	add_definitions(-DUSE_BOOST)
+endif()
+
 #------------------------------------------
 # Specific preprocessor defines
 #------------------------------------------
