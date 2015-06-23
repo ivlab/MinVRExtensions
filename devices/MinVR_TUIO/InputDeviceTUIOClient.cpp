@@ -65,7 +65,6 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 	// Send out events for TUIO "cursors" by polling the TuioClient for the current state  
 	_tuioClient->lockCursorList();
 	std::list<TuioCursor*> cursorList = _tuioClient->getTuioCursors();
-	
 
 	std::list<int> toErase;
 
