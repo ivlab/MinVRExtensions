@@ -9,6 +9,7 @@
 
 #include <DomeDeviceDriver.h>
 #include "framework/plugin/PluginFramework.h"
+#include "DomeDisplay.h"
 
 namespace MinVR {
 
@@ -25,7 +26,7 @@ framework::DisplayDeviceRef DomeDeviceDriver::create(const std::string &type, Co
 
 	if (type == "Dome")
 	{
-		//return framework::InputDeviceRef(new InputDeviceTUIOClient(name, config));
+		return framework::DisplayDeviceRef(new DomeDisplay());
 	}
 
 	return NULL;

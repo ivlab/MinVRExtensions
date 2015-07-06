@@ -18,10 +18,12 @@ project (MinVR_Dome)
 set (SOURCEFILES
 DomePlugin.cpp
 DomeDeviceDriver.cpp
+DomeDisplay.cpp
 )
 
 set (HEADERFILES
 DomeDeviceDriver.h
+DomeDisplay.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})

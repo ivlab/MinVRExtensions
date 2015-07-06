@@ -33,6 +33,7 @@ Window1_StereoType	    Mono
 Window1_UseDebugContext 1
 Window1_UseGPUAffinity  0
 Window1_Visible         0
+Window1_DisplayType     Dome
 
 Window1_NumViewports 1
 Window1_Viewport1_CameraType	OffAxis
