@@ -10,6 +10,7 @@
 #define DOMEDISPLAY_H_
 
 #include "framework/DisplayDevice.h"
+#include "GL/glew.h"
 
 namespace MinVR {
 
@@ -20,6 +21,20 @@ public:
 
 	void init(int threadId, WindowRef window);
 	void drawGraphics(AbstractMVRAppRef app, int threadId, AbstractCameraRef camera, WindowRef window);
+
+private:
+	void createFramebuffer(WindowRef window);
+	void createTexture(WindowRef window);
+	void createShader();
+	void createVBO();
+
+	GLuint _fboId;
+	GLuint _colorTexId;
+	GLuint _depthBufferId;
+	GLuint _shaderProgram;
+	GLuint _vbo;
+	GLuint _vao;
+	GLuint _indexVbo;
 };
 
 } /* namespace MinVR */
