@@ -27,9 +27,9 @@ DomeDisplay::~DomeDisplay() {
 	glDeleteBuffers(1, &_indexVbo);
 }
 
-void DomeDisplay::init(int threadId, WindowRef window) {
+void DomeDisplay::init(AbstractMVRAppRef app, int threadId, WindowRef window) {
 	//createTexture(window);
-	createFramebuffer(window);
+	createFramebuffer(app, threadId, window);
 	createShader();
 	createVBO();
 }
@@ -57,14 +57,14 @@ void DomeDisplay::drawGraphics(AbstractMVRAppRef app, int threadId,
 	glUseProgram(0);
 }
 
-void DomeDisplay::createFramebuffer(WindowRef window) {
+void DomeDisplay::createFramebuffer(AbstractMVRAppRef app, int threadId, WindowRef window) {
 	glGenFramebuffers(1, &_fboId);
 	glBindFramebuffer(GL_FRAMEBUFFER, _fboId);
 
 	createTexture(window);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorTexId, 0);
-	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthBufferId);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthBufferId);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		std::cout << "Could not create a valid framebuffer" << std::endl;
@@ -100,6 +100,8 @@ void DomeDisplay::createFramebuffer(WindowRef window) {
 		MinVR::Logger::getInstance().assertMessage(false, message.c_str());
 	}
 
+	app->initializeContextSpecificVars(threadId, window);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -123,7 +125,7 @@ void DomeDisplay::createTexture(WindowRef window) {
 	delete[] tex;
 
 	glBindRenderbuffer(GL_RENDERBUFFER, _depthBufferId);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, window->getWidth(), window->getHeight());
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, window->getWidth(), window->getHeight());
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 

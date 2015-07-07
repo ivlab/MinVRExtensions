@@ -19,11 +19,11 @@ public:
 	DomeDisplay();
 	virtual ~DomeDisplay();
 
-	void init(int threadId, WindowRef window);
+	void init(AbstractMVRAppRef app, int threadId, WindowRef window);
 	void drawGraphics(AbstractMVRAppRef app, int threadId, AbstractCameraRef camera, WindowRef window);
 
 private:
-	void createFramebuffer(WindowRef window);
+	void createFramebuffer(AbstractMVRAppRef app, int threadId, WindowRef window);
 	void createTexture(WindowRef window);
 	void createShader();
 	void createVBO();
