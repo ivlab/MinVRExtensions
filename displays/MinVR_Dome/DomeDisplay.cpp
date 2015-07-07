@@ -28,7 +28,7 @@ DomeDisplay::~DomeDisplay() {
 }
 
 void DomeDisplay::init(int threadId, WindowRef window) {
-	createTexture(window);
+	//createTexture(window);
 	createFramebuffer(window);
 	createShader();
 	createVBO();
@@ -36,9 +36,20 @@ void DomeDisplay::init(int threadId, WindowRef window) {
 
 void DomeDisplay::drawGraphics(AbstractMVRAppRef app, int threadId,
 		AbstractCameraRef camera, WindowRef window) {
-	//app->drawGraphics(threadId, camera, window);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, _fboId);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	app->drawGraphics(threadId, camera, window);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, _colorTexId);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(_shaderProgram);
+	GLint loc = glGetUniformLocation(_shaderProgram, "tex");
+	glUniform1i(loc, 0);
+
 	glBindVertexArray(_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
 
@@ -49,12 +60,46 @@ void DomeDisplay::drawGraphics(AbstractMVRAppRef app, int threadId,
 void DomeDisplay::createFramebuffer(WindowRef window) {
 	glGenFramebuffers(1, &_fboId);
 	glBindFramebuffer(GL_FRAMEBUFFER, _fboId);
+
+	createTexture(window);
+
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorTexId, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthBufferId);
+	//glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthBufferId);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		std::cout << "Could not create a valid framebuffer" << std::endl;
 	}
+
+	// check FBO status
+	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	std::string message = "";
+	switch (e) {
+		case GL_FRAMEBUFFER_UNDEFINED:
+			message = "FBO Undefined";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT :
+			message = "FBO Incomplete Attachment";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT :
+			message = "FBO Missing Attachment";
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER :
+			message = "FBO Incomplete Draw Buffer";
+			break;
+		case GL_FRAMEBUFFER_UNSUPPORTED :
+			message = "FBO Unsupported";
+			break;
+		case GL_FRAMEBUFFER_COMPLETE:
+			message = "FBO OK";
+			break;
+		default:
+			message = "FBO Problem?";
+	}
+
+	if (e != GL_FRAMEBUFFER_COMPLETE) {
+		MinVR::Logger::getInstance().assertMessage(false, message.c_str());
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -62,13 +107,20 @@ void DomeDisplay::createTexture(WindowRef window) {
 	glGenRenderbuffers(1, &_depthBufferId);
 	glGenTextures(1, &_colorTexId);
 
+	GLubyte* tex = new GLubyte[window->getWidth()*window->getHeight()*4];
+	for (int f = 0; f < window->getWidth()*window->getHeight()*4; f++)
+	{
+		tex[f] = 255*float(f)/float(window->getWidth()*window->getHeight()*4);
+	}
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, _colorTexId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8,  window->getWidth(), window->getHeight());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,  window->getWidth(), window->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tex);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	delete[] tex;
 
 	glBindRenderbuffer(GL_RENDERBUFFER, _depthBufferId);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, window->getWidth(), window->getHeight());
@@ -83,15 +135,21 @@ void DomeDisplay::createShader() {
 	vsText =
 	"#version 330\n"
 	"layout(location = 0) in vec2 pos;\n"
+	"out vec2 txcoord;\n"
 	"void main() {\n"
 	" gl_Position = vec4(pos,0.0,1.0);\n"
+	" txcoord = pos/2+vec2(0.5);\n"
 	"}\n";
 
 	fsText =
 	"#version 330\n"
+	"uniform sampler2D tex;\n"
 	"out vec4 FragColor;\n"
+	"in vec2 txcoord;\n"
 	"void main () {\n"
-	" FragColor = vec4(1,0,0,1);\n"
+	//" FragColor = vec4(1,0,0,1);\n"
+	" FragColor = texture2D(tex,txcoord);\n"
+	//" FragColor = vec4(txcoord, 0, 1);\n"
 	"}\n";
 
 	const char *source;
