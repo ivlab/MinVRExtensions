@@ -27,6 +27,7 @@ private:
 	void createTexture(WindowRef window);
 	void createShader();
 	void createVBO();
+	void makeGrid(int rows, int columns, float *vertices, unsigned int *indices);
 
 	GLuint _fboId;
 	GLuint _colorTexId;
@@ -35,6 +36,7 @@ private:
 	GLuint _vbo;
 	GLuint _vao;
 	GLuint _indexVbo;
+	int _numIndices;
 };
 
 } /* namespace MinVR */

@@ -44,6 +44,7 @@ void DomeDisplay::drawGraphics(AbstractMVRAppRef app, int threadId,
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _colorTexId);
+	//glGenerateMipmap(GL_TEXTURE_2D);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(_shaderProgram);
@@ -53,7 +54,7 @@ void DomeDisplay::drawGraphics(AbstractMVRAppRef app, int threadId,
 	glBindVertexArray(_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVbo);
 
-	glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLE_STRIP, _numIndices, GL_UNSIGNED_INT, 0);
 	glUseProgram(0);
 }
 
@@ -116,11 +117,16 @@ void DomeDisplay::createTexture(WindowRef window) {
 	}
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, _colorTexId);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,  window->getWidth(), window->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,  window->getWidth(), window->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	delete[] tex;
 
@@ -133,7 +139,7 @@ void DomeDisplay::createShader() {
 	GLuint vertexShader, fragmentShader;
 	std::string vsText, fsText;
 
-	 // Read source code from shader files
+	// Read source code from shader files
 	vsText =
 	"#version 330\n"
 	"layout(location = 0) in vec2 pos;\n"
@@ -152,6 +158,41 @@ void DomeDisplay::createShader() {
 	//" FragColor = vec4(1,0,0,1);\n"
 	" FragColor = texture2D(tex,txcoord);\n"
 	//" FragColor = vec4(txcoord, 0, 1);\n"
+	"}\n";
+
+	//135 degrees
+	fsText =
+	"#version 330\n"
+	"uniform sampler2D tex;\n"
+	"out vec4 FragColor;\n"
+	"in vec2 txcoord;\n"
+	"void main()\n"
+	"{\n"
+	"float PI = 3.1415926535;\n"
+	"float aperture = 178;\n"
+	"float apertureHalf = 0.5 * aperture * (PI / 180.0);\n"
+	"float maxFactor = sin(apertureHalf);\n"
+	"vec2 uv;\n"
+	"float top = (2.0-acos(PI*(180.0-135.0)/180.0))/2.0;\n"
+	"vec2 xy = 2.0 * txcoord.xy*vec2(1.0,top) - 1.0;\n"
+	"float d = length(xy);\n"
+	"if (d < (2.0-maxFactor))\n"
+	"{\n"
+	"d = length(xy * maxFactor);\n"
+	"float z = sqrt(1.0 - d * d);\n"
+	"float r = atan(d, z) / PI;\n"
+	"float phi = atan(xy.y, xy.x);\n"
+	"uv.x = r * cos(phi) + 0.5;\n"
+	"uv.y = r * sin(phi) + 0.5;\n"
+	"}\n"
+	"else\n"
+	"{\n"
+	" discard;\n"
+	"uv = txcoord.xy;\n"
+	"}\n"
+	"vec4 c = texture2D(tex, uv/vec2(1.0,top));\n"
+	//"c = vec4(uv.xy,0,1);\n"
+	"FragColor = c;\n"
 	"}\n";
 
 	const char *source;
@@ -203,9 +244,44 @@ void DomeDisplay::createShader() {
 		glGetProgramInfoLog(_shaderProgram, length, &length, &log[0]);
 		std::cerr << &log[0];
 	}
+
+	//exit(0);
 }
 
+/*void DomeDisplay::createVBO() {
+	int res = 500;
+	int numVertices = res * res * 2;
+	_numIndices = (res-1) * (2 + res * 2);
+
+	float* vertices = new float[numVertices];
+	unsigned int* indices = new unsigned int[_numIndices];
+
+	makeGrid(res,res,vertices,indices);
+
+	glGenVertexArrays(1, &_vao);
+	glGenBuffers( 1, &_vbo);
+	glBindVertexArray(_vao);
+
+	//Create VBO
+	glBindBuffer( GL_ARRAY_BUFFER, _vbo );
+	glBufferData( GL_ARRAY_BUFFER, numVertices * sizeof(GLfloat), 0, GL_STATIC_DRAW );
+	glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * sizeof(GLfloat), vertices);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), (char*)0 + 0*sizeof(GLfloat));
+
+	//Create IBO
+	glGenBuffers( 1, &_indexVbo );
+	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _indexVbo );
+	glBufferData( GL_ELEMENT_ARRAY_BUFFER, _numIndices * sizeof(GLuint), 0, GL_STATIC_DRAW );
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, _numIndices * sizeof(GLuint), indices);
+
+	delete[] vertices;
+	delete[] indices;
+}*/
+
 void DomeDisplay::createVBO() {
+	_numIndices = 4;
 	//Setup fullscreen quad vbo
 	GLfloat fullscreenVertices[8];
 	GLuint fullscreenIndices[4];
@@ -239,6 +315,28 @@ void DomeDisplay::createVBO() {
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _indexVbo );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), 0, GL_STATIC_DRAW );
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, 4 * sizeof(GLuint), fullscreenIndices);
+}
+
+void DomeDisplay::makeGrid(int rows, int columns, float *vertices, unsigned int *indices){
+    // Set up vertices
+    for (int r = 0; r < rows; ++r) {
+        for (int c = 0; c < columns; ++c) {
+            int index = r*columns + c;
+            vertices[2*index + 0] = 2.0*float(c)/float(columns)-1.0f;
+            vertices[2*index + 1] = 2.0*float(r)/float(rows)-1.0f;
+        }
+    }
+
+    // Set up indices
+    int i = 0;
+    for (int r = 0; r < rows - 1; ++r) {
+        indices[i++] = r * columns;
+        for (int c = 0; c < columns; ++c) {
+            indices[i++] = r * columns + c;
+            indices[i++] = (r + 1) * columns + c;
+        }
+        indices[i++] = (r + 1) * columns + (columns - 1);
+    }
 }
 
 } /* namespace MinVR */
