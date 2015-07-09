@@ -41,6 +41,7 @@ void DomeDisplay::drawGraphics(AbstractMVRAppRef app, int threadId,
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	app->drawGraphics(threadId, camera, window);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0,0,1200,600);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _colorTexId);
@@ -121,17 +122,17 @@ void DomeDisplay::createTexture(WindowRef window) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	//glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,  window->getWidth(), window->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,  window->getWidth(), window->getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	delete[] tex;
 
 	glBindRenderbuffer(GL_RENDERBUFFER, _depthBufferId);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, window->getWidth(), window->getHeight());
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, window->getWidth(), window->getHeight());
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
@@ -160,7 +161,7 @@ void DomeDisplay::createShader() {
 	//" FragColor = vec4(txcoord, 0, 1);\n"
 	"}\n";
 
-	//135 degrees
+	/*//135 degrees
 	fsText =
 	"#version 330\n"
 	"uniform sampler2D tex;\n"
@@ -193,7 +194,7 @@ void DomeDisplay::createShader() {
 	"vec4 c = texture2D(tex, uv/vec2(1.0,top));\n"
 	//"c = vec4(uv.xy,0,1);\n"
 	"FragColor = c;\n"
-	"}\n";
+	"}\n";*/
 
 	const char *source;
 	int length;
