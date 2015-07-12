@@ -41,7 +41,6 @@ void DomeDisplay::drawGraphics(AbstractMVRAppRef app, int threadId,
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	app->drawGraphics(threadId, camera, window);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0,0,1200,600);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _colorTexId);
@@ -161,7 +160,7 @@ void DomeDisplay::createShader() {
 	//" FragColor = vec4(txcoord, 0, 1);\n"
 	"}\n";
 
-	/*//135 degrees
+	//135 degrees
 	fsText =
 	"#version 330\n"
 	"uniform sampler2D tex;\n"
@@ -191,10 +190,11 @@ void DomeDisplay::createShader() {
 	" discard;\n"
 	"uv = txcoord.xy;\n"
 	"}\n"
+	//"vec4 c = texture2D(tex, uv);\n"
 	"vec4 c = texture2D(tex, uv/vec2(1.0,top));\n"
 	//"c = vec4(uv.xy,0,1);\n"
 	"FragColor = c;\n"
-	"}\n";*/
+	"}\n";
 
 	const char *source;
 	int length;
