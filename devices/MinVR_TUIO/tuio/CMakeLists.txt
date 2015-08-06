@@ -48,6 +48,28 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 ############################################################
+# Add POSTFIX info
+############################################################
+
+set(CMAKE_DEBUG_POSTFIX "d")
+set(CMAKE_RELEASE_POSTFIX "")
+set(CMAKE_RELWITHDEBINFO_POSTFIX "rd")
+set(CMAKE_MINSIZEREL_POSTFIX "s")
+
+#set the build postfix extension according to the current configuration
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+  set(CMAKE_BUILD_POSTFIX "${CMAKE_RELEASE_POSTFIX}")
+elseif (CMAKE_BUILD_TYPE MATCHES "MinSizeRel")
+  set(CMAKE_BUILD_POSTFIX "${CMAKE_MINSIZEREL_POSTFIX}")
+elseif (CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
+  set(CMAKE_BUILD_POSTFIX "${CMAKE_RELWITHDEBINFO_POSTFIX}")
+elseif (CMAKE_BUILD_TYPE MATCHES "Debug")
+  set(CMAKE_BUILD_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
+else()
+  set(CMAKE_BUILD_POSTFIX "")
+endif()
+
+############################################################
 #Finally add all the targets here
 ############################################################
 

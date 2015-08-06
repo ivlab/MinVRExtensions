@@ -37,7 +37,7 @@ add_definitions(-DUSE_VRPN)
 #------------------------------------------
 # Download dependencies
 #------------------------------------------
-	
+
 		set(vrpn_checkout_Dir ${PROJECT_SOURCE_DIR}/vrpn)
 		make_directory(${vrpn_checkout_Dir})
         message("   Library will be built from source in ${vrpn_checkout_Dir}.")
@@ -56,7 +56,7 @@ add_definitions(-DUSE_VRPN)
 
 		ExternalProject_add(vrpn
 				PREFIX ${vrpn_PREFIX}
-				URL http://www.cs.unc.edu/Research/vrpn/downloads/vrpn_07_30.zip
+				URL https://github.com/vrpn/vrpn/releases/download/v07.33/vrpn_07_33.zip
 				INSTALL_DIR ${vrpn_INSTALL_DIR}
 				CMAKE_ARGS ${vrpn_CMAKE_ARGS}
 				UPDATE_COMMAND ""
@@ -64,13 +64,13 @@ add_definitions(-DUSE_VRPN)
 		set_property(TARGET vrpn PROPERTY FOLDER "Dependencies")
 		set(VRPN_INCLUDE_DIR ${vrpn_INSTALL_DIR}/include CACHE INTERNAL "Directory of VRPN header files")
 		if(MSVC)
-			set(VRPN_LIBRARY ${vrpn_INSTALL_DIR}/lib/vrpn.lib CACHE INTERNAL "VRPN lib file")
+			set(VRPN_LIBRARY optimized ${vrpn_INSTALL_DIR}/lib/vrpn.lib debug ${vrpn_INSTALL_DIR}/lib/vrpnd.lib CACHE INTERNAL "VRPN lib file")
 			set(All_LIB ${MinVR_LIBRARIES})
 		else()
-			set(VRPN_LIBRARY ${vrpn_INSTALL_DIR}/lib/libvrpn.a CACHE INTERNAL "VRPN lib file")
+			set(VRPN_LIBRARY optimized ${vrpn_INSTALL_DIR}/lib/libvrpn.a debug ${vrpn_INSTALL_DIR}/lib/libvrpnd.a CACHE INTERNAL "VRPN lib file")
 		endif()	
 		add_definitions(-DUSE_VRPN)
-		set(LIBS_ALL ${LIBS_ALL} ${VRPN_LIBRARY})
+		#set(LIBS_ALL ${LIBS_ALL} ${VRPN_LIBRARY})
 		include_directories(${VRPN_INCLUDE_DIR})
 
 #------------------------------------------

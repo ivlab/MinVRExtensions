@@ -80,3 +80,7 @@ clobber:
 	rm -rf ./build
 	rm -rf ./install
 	rm -rf ../$(DIRNAME)_eclipse
+	rm -rf devices/MinVR_TUIO/tuio/src
+	rm -rf devices/MinVR_TUIO/tuio/tmp
+	rm -rf devices/MinVR_VRPN/vrpn/*
+	
