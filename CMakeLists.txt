@@ -15,6 +15,11 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "$ENV{MinVR_DIR}/plugins" CACHE PATH "default install path" FORCE )
 endif()
 
+if(USE_BOOST)
+	add_definitions(-DUSE_BOOST)
+endif()
+
+
 #This way will auto detect all source files in the directory,
 #while this will work, the preferred technique is to list out
 #sourcefiles individually.  This will allow cmake to automatically

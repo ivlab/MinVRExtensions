@@ -28,6 +28,10 @@ TuioDeviceDriver.h
 
 add_definitions(-DUSE_TUIO)
 
+if(USE_BOOST)
+	add_definitions(-DUSE_BOOST)
+endif()
+
 source_group("Header Files" FILES ${HEADERFILES})
 
 #------------------------------------------
