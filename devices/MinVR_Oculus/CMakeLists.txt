@@ -9,6 +9,7 @@ project (MinVR_Oculus)
 
 set (SOURCEFILES
 	OculusRiftDisplay.cpp
+	OculusPlugin.cpp
 )
 
 set (HEADERFILES
@@ -46,13 +47,13 @@ UPDATE_COMMAND ""
 set_property(TARGET osdk PROPERTY FOLDER "Dependencies")
 set(osdk_INCLUDE_DIR ${osdk_INSTALL_DIR}/include CACHE INTERNAL "Directory of osdk header files")
 	if(MSVC)
-		set(osdk_LIBRARY optimized ${osdk_INSTALL_DIR}/lib/edid.lib debug ${osdk_INSTALL_DIR}/lib/edidd.lib CACHE INTERNAL "edid lib file")
-		set(osdk_LIBRARY ${osdk_LIBRARY} optimized ${osdk_INSTALL_DIR}/lib/OculusVR.lib debug ${osdk_INSTALL_DIR}/lib/OculusVRd.lib CACHE INTERNAL "edid lib file")
+		set(osdk_LIBRARY optimized ${osdk_INSTALL_DIR}/lib/OculusVR.lib debug ${osdk_INSTALL_DIR}/lib/OculusVRd.lib CACHE INTERNAL "edid lib file")
+		set(osdk_LIBRARY ${osdk_LIBRARY} optimized ${osdk_INSTALL_DIR}/lib/edid.lib debug ${osdk_INSTALL_DIR}/lib/edidd.lib CACHE INTERNAL "edid lib file")
 	else()
 #		set(osdk_LIBRARY optimized ${osdk_INSTALL_DIR}/lib/libedid.a debug ${osdk_INSTALL_DIR}/lib/libedidd.a CACHE INTERNAL "edid lib file")
-		set(osdk_LIBRARY ${osdk_INSTALL_DIR}/lib/libedid.a CACHE INTERNAL "edid lib file")
+		set(osdk_LIBRARY ${osdk_INSTALL_DIR}/lib/libOculusVR.a CACHE INTERNAL "osdk lib file")
+		set(osdk_LIBRARY ${osdk_LIBRARY} ${osdk_INSTALL_DIR}/lib/libedid.a CACHE INTERNAL "edid lib file")
 #		set(osdk_LIBRARY optimized ${osdk_INSTALL_DIR}/lib/libOculusVR.a debug ${osdk_INSTALL_DIR}/lib/libOculusVRd.a CACHE INTERNAL "osdk lib file")
-		set(osdk_LIBRARY ${osdk_LIBRARY} ${osdk_INSTALL_DIR}/lib/libOculusVR.a CACHE INTERNAL "osdk lib file")
 	endif()
 add_definitions(-DUSE_osdk)
 set(LIBS_ALL ${LIBS_ALL} ${osdk_LIBRARY})
@@ -116,6 +117,11 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 #------------------------------------------
 # Build Target
 #------------------------------------------
+SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
 if(USE_BOOST)
 	add_dependencies(${PROJECT_NAME} osdk boost MVRCore)

@@ -14,36 +14,36 @@ InitialHeadFrame		((1,0,0,0), (0,1,0,0), (0,0,1,1), (0,0,0,1))
 
 NumWindows				1
 
-Window1_Width           600
-Window1_Height          600
+Window1_Width           1200
+Window1_Height          800
 Window1_X               40
 Window1_Y               40
-Window1_RGBBits         0
-Window1_AlphaBits       0
-Window1_DepthBits       8
+Window1_RGBBits         8
+Window1_AlphaBits       8
+Window1_DepthBits       32
 Window1_StencilBits     0
 Window1_MSAASamples     1
 Window1_FullScreen      0
-Window1_Stereo          0
+Window1_Stereo          1
 Window1_Resizable       1
 Window1_AllowMaximize   1
-Window1_Framed          1
+Window1_Framed          0
 Window1_Caption         MinVR Window 1
-Window1_StereoType	    Mono
-Window1_UseDebugContext 1
+Window1_StereoType	    Oculus
+Window1_UseDebugContext 0
 Window1_UseGPUAffinity  0
 Window1_Visible         0
 
 Window1_NumViewports 1
 Window1_Viewport1_CameraType	OffAxis
-Window1_Viewport1_Width				600
-Window1_Viewport1_Height			600
+Window1_Viewport1_Width				1200 
+Window1_Viewport1_Height			1150
 Window1_Viewport1_X					0
 Window1_Viewport1_Y					0
-Window1_Viewport1_TopLeft           (-0.65, 0.5, 0.0)
-Window1_Viewport1_TopRight          ( 0.65, 0.5, 0.0)
-Window1_Viewport1_BotLeft           (-0.65,-0.5, 0.0)
-Window1_Viewport1_BotRight          ( 0.65,-0.5, 0.0)
+Window1_Viewport1_TopLeft           (-0.5, 0.5, 0.0)
+Window1_Viewport1_TopRight          ( 0.5, 0.5, 0.0)
+Window1_Viewport1_BotLeft           (-0.5,-0.5, 0.0)
+Window1_Viewport1_BotRight          ( 0.5,-0.5, 0.0)
 Window1_Viewport1_NearClip          0.01
 Window1_Viewport1_FarClip           100.0
 

@@ -102,6 +102,7 @@ OculusRiftDisplay::OculusRiftDisplay() {
 	std::cout << "OculusRiftDisplay" << std::endl;
 	_hmd = ovrHmd_Create(0);
 	if (nullptr == _hmd) {
+		//ovrHmdType defaultHmdType = ovrHmd_DK2;
 		ovrHmdType defaultHmdType = ovrHmd_DK2;
 		_hmd = ovrHmd_CreateDebug(defaultHmdType);
 		_hmdDesktopPosition = ivec2(100, 100);
@@ -110,6 +111,8 @@ OculusRiftDisplay::OculusRiftDisplay() {
 		_hmdDesktopPosition = ivec2(_hmd->WindowsPos.x, _hmd->WindowsPos.y);
 		_hmdNativeResolution = ivec2(_hmd->Resolution.w, _hmd->Resolution.h);
 	}
+	std::cout << _hmdDesktopPosition.x << " " << _hmdDesktopPosition.y << std::endl;
+	std::cout << _hmdNativeResolution.x << " " << _hmdNativeResolution.y << std::endl;
 }
 
 OculusRiftDisplay::~OculusRiftDisplay() {
@@ -120,6 +123,20 @@ OculusRiftDisplay::~OculusRiftDisplay() {
 }
 
 void OculusRiftDisplay::render(int threadId, WindowRef window, AbstractMVRAppRef app) {
+	std::cout << "render" << std::endl;
+	/*glDrawBuffer(GL_BACK);
+	for (int v=0; v < window->getNumViewports(); v++) {
+		MinVR::Rect2D viewport = window->getViewport(v);
+		glViewport(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+		glScissor(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+        glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		window->getCamera(v)->applyProjectionAndCameraMatrices();
+		//app->drawGraphics(threadId, window, v);
+		app->drawGraphics(threadId, window->getCamera(v), window);
+	}
+	return;*/
+
 	/*glDrawBuffer(GL_BACK);
 	glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Left Eye
@@ -136,6 +153,8 @@ void OculusRiftDisplay::render(int threadId, WindowRef window, AbstractMVRAppRef
 		window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
 		app->drawGraphics(threadId, window->getCamera(v), window);
 	}*/
+
+  	glDrawBuffer(GL_BACK);
 
 	GLenum err;
 
@@ -157,22 +176,26 @@ void OculusRiftDisplay::render(int threadId, WindowRef window, AbstractMVRAppRef
       for (int v=0; v < window->getNumViewports(); v++)
       {
       		MinVR::Rect2D viewport = window->getViewport(v);
-      		glViewport(viewport.x0()+viewport.width()/2, viewport.y0(), viewport.width()/2, viewport.height());
+      		glViewport(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+      		glScissor(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
       		if (eye == ovrEye_Left)
       		{
+      			glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
           		window->getCamera(v)->applyProjectionAndCameraMatricesForLeftEye();
       		}
       		else
       		{
+      			glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
           		window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
       		}
-      		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      		glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      		//glClear(GL_COLOR_BUFFER_BIT);
 
       		while((err = glGetError()) != GL_NO_ERROR) {
       			std::cout << "GLERRORssss: "<<err<<std::endl;
       		}
 
-      		app->drawGraphics(threadId, window->getCamera(v), window);
+      		app->drawGraphics(threadId, window, v);
       }
       //renderScene(projections[eye], ovr::toGlm(eyePoses[eye]));
     }
@@ -231,7 +254,7 @@ void OculusRiftDisplay::initializeContextSpecificVars(int threadId,
     ovrGLConfig cfg;
     memset(&cfg, 0, sizeof(cfg));
     cfg.OGL.Header.API = ovrRenderAPI_OpenGL;
-    cfg.OGL.Header.RTSize = ovr::fromGlm(uvec2(500,500));
+    cfg.OGL.Header.RTSize = ovr::fromGlm(uvec2(window->getWidth(),window->getHeight()));
     cfg.OGL.Header.Multisample = 0;
 
     int distortionCaps = 0
@@ -258,6 +281,10 @@ void OculusRiftDisplay::initializeContextSpecificVars(int threadId,
       ovrTrackingCap_Orientation | ovrTrackingCap_Position | ovrTrackingCap_MagYawCorrection, 0)) {
       FAIL("Could not attach to sensor device");
     }
+
+
+    //int configResult = ovrHmd_ConfigureRendering(_hmd, &cfg.Config,
+    	//	distortionCaps, _hmd->MaxEyeFov, _eyeRenderDescs);
 
     memset(_eyeTextures, 0, 2 * sizeof(ovrGLTexture));
 
