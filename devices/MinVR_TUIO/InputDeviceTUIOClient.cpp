@@ -62,9 +62,9 @@ InputDeviceTUIOClient::~InputDeviceTUIOClient()
 
 void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 {
-	// Send out events for TUIO "cursors" by polling the TuioClient for the current state  
-	_tuioClient->lockCursorList();
-	std::list<TuioCursor*> cursorList = _tuioClient->getTuioCursors();
+	// Send out events for TUIO "cursors" by polling the TuioClient for the current state
+    std::list<TuioCursor*> cursorList = _tuioClient->getTuioCursors();
+    _tuioClient->lockCursorList();
 
 	std::list<int> toErase;
 
@@ -119,8 +119,8 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 
 
 	// Unsure what TUIO "objects" are -- perhaps tangible props.  In any case, this is how to access object data:
-	_tuioClient->lockObjectList();
-	std::list<TuioObject*> objectList = _tuioClient->getTuioObjects();
+    std::list<TuioObject*> objectList = _tuioClient->getTuioObjects();
+    _tuioClient->lockObjectList();
 	for (std::list<TuioObject*>::iterator iter = objectList.begin(); iter!=objectList.end(); iter++) {
 		TuioObject* tuioObject = (*iter);    
 		int   id    = tuioObject->getSymbolID();
