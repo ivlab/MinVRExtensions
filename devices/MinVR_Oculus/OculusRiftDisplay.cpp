@@ -93,6 +93,26 @@ namespace ovr {
   }
 }
 
+class OculusCamera : public AbstractCamera {
+public:
+    glm::dmat4 proj;
+    glm::dmat4 model;
+    glm::dmat4 view;
+    
+    OculusCamera() {}
+    virtual ~OculusCamera() {}
+    virtual void updateHeadTrackingFrame(glm::dmat4 newHeadFrame) {}
+    virtual void applyProjectionAndCameraMatrices(){}
+    virtual void applyProjectionAndCameraMatricesForLeftEye(){}
+    virtual void applyProjectionAndCameraMatricesForRightEye(){}
+    virtual void setObjectToWorldMatrix(glm::dmat4 obj2World){}
+    virtual glm::dmat4 getLastAppliedProjectionMatrix(){ return proj; }
+    virtual glm::dmat4 getLastAppliedModelMatrix(){ return model; }
+    virtual glm::dmat4 getLastAppliedViewMatrix(){ return view; }
+    virtual glm::dvec3 getLookVector(){ return glm::dvec3(0.0,0.0,1.0); }
+    virtual glm::dmat4 getObjectToWorldMatrix(){ return model; }
+};
+
 OculusRiftDisplay::OculusRiftDisplay() {
 
 	if (!ovr_Initialize()) {
@@ -108,6 +128,7 @@ OculusRiftDisplay::OculusRiftDisplay() {
 		_hmdDesktopPosition = ivec2(100, 100);
 		_hmdNativeResolution = uvec2(1200, 800);
 	} else {
+        std::cout << _hmd->Type << std::endl;
 		_hmdDesktopPosition = ivec2(_hmd->WindowsPos.x, _hmd->WindowsPos.y);
 		_hmdNativeResolution = ivec2(_hmd->Resolution.w, _hmd->Resolution.h);
 	}
@@ -123,7 +144,6 @@ OculusRiftDisplay::~OculusRiftDisplay() {
 }
 
 void OculusRiftDisplay::render(int threadId, WindowRef window, AbstractMVRAppRef app) {
-	std::cout << "render" << std::endl;
 	/*glDrawBuffer(GL_BACK);
 	for (int v=0; v < window->getNumViewports(); v++) {
 		MinVR::Rect2D viewport = window->getViewport(v);
@@ -176,16 +196,21 @@ void OculusRiftDisplay::render(int threadId, WindowRef window, AbstractMVRAppRef
       for (int v=0; v < window->getNumViewports(); v++)
       {
       		MinVR::Rect2D viewport = window->getViewport(v);
-      		glViewport(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
-      		glScissor(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+          
+          //std::cout << vp.Pos.x << " " << vp.Pos.y << " " << vp.Size.w << " " << vp.Size.h << std::endl;
+          
+      		glViewport(vp.Pos.x, vp.Pos.y, vp.Size.w, vp.Size.h);
+      		glScissor(vp.Pos.x, vp.Pos.y, vp.Size.w, vp.Size.h);
+          
+          //glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
       		if (eye == ovrEye_Left)
       		{
-      			glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+      			//glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
           		window->getCamera(v)->applyProjectionAndCameraMatricesForLeftEye();
       		}
       		else
-      		{
-      			glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+            {
+                //glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
           		window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
       		}
       		glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -195,7 +220,17 @@ void OculusRiftDisplay::render(int threadId, WindowRef window, AbstractMVRAppRef
       			std::cout << "GLERRORssss: "<<err<<std::endl;
       		}
 
-      		app->drawGraphics(threadId, window, v);
+          
+          OculusCamera *cam = new OculusCamera();
+          cam->proj = glm::dmat4(_projections[eye]);
+          glm::mat4 headPose = ovr::toGlm(_eyePoses[eye]);
+          glm::mat4 modelView = glm::lookAt(glm::vec3(0,0,OVR_DEFAULT_IPD*5.0f), glm::vec3(0), glm::vec3(0,1,0));
+          modelView = glm::inverse(headPose)*modelView;
+          modelView = glm::scale(modelView, glm::vec3(OVR_DEFAULT_IPD));
+          cam->view = glm::dmat4(modelView);
+          
+            RenderDevice rd(WindowInfo({threadId, window, v, AbstractCameraRef(cam)}), AppInfo({app.get()}));
+      		app->drawGraphics(rd);
       }
       //renderScene(projections[eye], ovr::toGlm(eyePoses[eye]));
     }
@@ -301,6 +336,7 @@ void OculusRiftDisplay::initializeContextSpecificVars(int threadId,
 
     ovr::for_each_eye([&](ovrEyeType eye){
     	const ovrEyeRenderDesc & erd = _eyeRenderDescs[eye];
+        std::cout << "FOV: " << eye << " "<< erd.Fov.UpTan << " " << erd.Fov.DownTan << " " << erd.Fov.LeftTan << " " << erd.Fov.RightTan << std::endl;
     	ovrMatrix4f ovrPerspectiveProjection = ovrMatrix4f_Projection(erd.Fov, OVR_DEFAULT_IPD * 4, 100000.0f, true);
     	_projections[eye] = ovr::toGlm(ovrPerspectiveProjection);
     	_eyeOffsets[eye] = erd.HmdToEyeViewOffset;

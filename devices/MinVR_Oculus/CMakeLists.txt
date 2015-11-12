@@ -49,9 +49,18 @@ set(osdk_INCLUDE_DIR ${osdk_INSTALL_DIR}/include CACHE INTERNAL "Directory of os
 	if(MSVC)
 		set(osdk_LIBRARY optimized ${osdk_INSTALL_DIR}/lib/OculusVR.lib debug ${osdk_INSTALL_DIR}/lib/OculusVRd.lib CACHE INTERNAL "edid lib file")
 		set(osdk_LIBRARY ${osdk_LIBRARY} optimized ${osdk_INSTALL_DIR}/lib/edid.lib debug ${osdk_INSTALL_DIR}/lib/edidd.lib CACHE INTERNAL "edid lib file")
+    elseif(APPLE)
+        set(osdk_LIBRARY ${osdk_INSTALL_DIR}/lib/libOculusVR.a CACHE INTERNAL "osdk lib file")
+
+        # Extra libs
+        find_library(COCOA_LIBRARY Cocoa)
+        find_library(IOKIT_LIBRARY IOKit)
+        find_package(OpenGL REQUIRED)
+        set(osdk_LIBRARY ${osdk_LIBRARY} ${COCOA_LIBRARY} ${IOKIT_LIBRARY} ${OPENGL_LIBRARIES} CACHE INTERNAL "osdk lib file")
+
 	else()
 #		set(osdk_LIBRARY optimized ${osdk_INSTALL_DIR}/lib/libedid.a debug ${osdk_INSTALL_DIR}/lib/libedidd.a CACHE INTERNAL "edid lib file")
-		set(osdk_LIBRARY ${osdk_INSTALL_DIR}/lib/libOculusVR.a CACHE INTERNAL "osdk lib file")
+        set(osdk_LIBRARY ${osdk_INSTALL_DIR}/lib/libOculusVR.a CACHE INTERNAL "osdk lib file")
 		set(osdk_LIBRARY ${osdk_LIBRARY} ${osdk_INSTALL_DIR}/lib/libedid.a CACHE INTERNAL "edid lib file")
 #		set(osdk_LIBRARY optimized ${osdk_INSTALL_DIR}/lib/libOculusVR.a debug ${osdk_INSTALL_DIR}/lib/libOculusVRd.a CACHE INTERNAL "osdk lib file")
 	endif()
