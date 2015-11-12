@@ -98,4 +98,4 @@ clobber:
 	rm -rf devices/MinVR_TUIO/tuio/src
 	rm -rf devices/MinVR_TUIO/tuio/tmp
 	rm -rf devices/MinVR_VRPN/vrpn/*
-	
+	rm -rf devices/MinVR_Oculus/osdk

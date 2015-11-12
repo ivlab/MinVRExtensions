@@ -8,10 +8,11 @@ project (MinVR_Oculus)
 #------------------------------------------
 
 set (SOURCEFILES
-TestPlugin.cpp
+	OculusRiftDisplay.cpp
 )
 
 set (HEADERFILES
+	OculusRiftDisplay.h
 )
 
 source_group("Header Files" FILES ${HEADERFILES})
@@ -44,18 +45,21 @@ UPDATE_COMMAND ""
 
 set_property(TARGET osdk PROPERTY FOLDER "Dependencies")
 set(osdk_INCLUDE_DIR ${osdk_INSTALL_DIR}/include CACHE INTERNAL "Directory of osdk header files")
-if(MSVC)
-set(osdk_LIBRARY ${osdk_INSTALL_DIR}/lib/OculusVR.dll CACHE INTERNAL "osdk lib file")
-else()
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-set(osdk_LIBRARY ${osdk_INSTALL_DIR}/lib/libOculusVR.dylib CACHE INTERNAL "osdk lib file")
-else()
-set(osdk_LIBRARY ${osdk_INSTALL_DIR}/lib/libOculusVR.so CACHE INTERNAL "osdk lib file")
-endif()
-endif()
+	if(MSVC)
+		set(osdk_LIBRARY optimized ${osdk_INSTALL_DIR}/lib/edid.lib debug ${osdk_INSTALL_DIR}/lib/edidd.lib CACHE INTERNAL "edid lib file")
+		set(osdk_LIBRARY ${osdk_LIBRARY} optimized ${osdk_INSTALL_DIR}/lib/OculusVR.lib debug ${osdk_INSTALL_DIR}/lib/OculusVRd.lib CACHE INTERNAL "edid lib file")
+	else()
+#		set(osdk_LIBRARY optimized ${osdk_INSTALL_DIR}/lib/libedid.a debug ${osdk_INSTALL_DIR}/lib/libedidd.a CACHE INTERNAL "edid lib file")
+		set(osdk_LIBRARY ${osdk_INSTALL_DIR}/lib/libedid.a CACHE INTERNAL "edid lib file")
+#		set(osdk_LIBRARY optimized ${osdk_INSTALL_DIR}/lib/libOculusVR.a debug ${osdk_INSTALL_DIR}/lib/libOculusVRd.a CACHE INTERNAL "osdk lib file")
+		set(osdk_LIBRARY ${osdk_LIBRARY} ${osdk_INSTALL_DIR}/lib/libOculusVR.a CACHE INTERNAL "osdk lib file")
+	endif()
 add_definitions(-DUSE_osdk)
 set(LIBS_ALL ${LIBS_ALL} ${osdk_LIBRARY})
 include_directories(${osdk_INCLUDE_DIR})
+ExternalProject_Get_Property(osdk source_dir)
+include_directories(${source_dir}/LibOVR/Src)
+message(sdk ${source_dir})
 message(${osdk_INCLUDE_DIR})
 
 #------------------------------------------
@@ -114,11 +118,11 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 #------------------------------------------
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
 if(USE_BOOST)
-	add_dependencies(${PROJECT_NAME} boost MVRCore)
+	add_dependencies(${PROJECT_NAME} osdk boost MVRCore)
 else()
-	add_dependencies(${PROJECT_NAME} MVRCore)
+	add_dependencies(${PROJECT_NAME} osdk MVRCore)
 endif()
-target_link_libraries(${PROJECT_NAME} ${All_LIB})
+target_link_libraries(${PROJECT_NAME} ${All_LIB} ${LIBS_ALL})
 
 #------------------------------------------
 # Install Target

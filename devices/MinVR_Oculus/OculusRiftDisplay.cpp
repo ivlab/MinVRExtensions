@@ -197,7 +197,7 @@ MinVR::OculusRiftDisplayFactory::OculusRiftDisplayFactory() {
 MinVR::OculusRiftDisplayFactory::~OculusRiftDisplayFactory() {
 }
 
-StereoDisplayRef MinVR::OculusRiftDisplayFactory::create(
+/*StereoDisplayRef MinVR::OculusRiftDisplayFactory::create(
 		const std::string& type) {
 	if (type == "OculusRift")
 	{
@@ -205,7 +205,7 @@ StereoDisplayRef MinVR::OculusRiftDisplayFactory::create(
 	}
 
 	return NULL;
-}
+}*/
 
 void OculusRiftDisplay::initializeContextSpecificVars(int threadId,
 		WindowRef window) {
@@ -291,9 +291,9 @@ void OculusRiftDisplay::initializeContextSpecificVars(int threadId,
 
 } /* namespace MinVR */
 
-extern "C"
+/*extern "C"
 {
 	MinVR::StereoDisplayFactoryRef getStereoDisplayFactory() {
 		return MinVR::StereoDisplayFactoryRef(new MinVR::OculusRiftDisplayFactory());
 	}
-}
+}*/
