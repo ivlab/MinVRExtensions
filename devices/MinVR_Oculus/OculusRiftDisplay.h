@@ -9,7 +9,7 @@
 #ifndef OCULUSRIFTDISPLAY_H_
 #define OCULUSRIFTDISPLAY_H_
 
-//#include "MVRCore/Display/StereoDisplayFactory.h"
+#include "framework/StereoDisplay.h"
 #include "MVRCore/AbstractMVRApp.H"
 
 #include <iostream>
@@ -218,7 +218,7 @@ struct FramebufferWraper {
   }
 };
 
-class OculusRiftDisplay { //: public StereoDisplay {
+class OculusRiftDisplay : public MinVR::framework::StereoDisplay {
 public:
 	OculusRiftDisplay();
 	virtual ~OculusRiftDisplay();
@@ -239,12 +239,12 @@ private:
 	unsigned int _frame{ 0 };
 };
 
-class OculusRiftDisplayFactory { // : public StereoDisplayFactory {
+class OculusRiftDisplayFactory : public MinVR::framework::StereoDisplayDriver {
 public:
 	OculusRiftDisplayFactory();
 	virtual ~OculusRiftDisplayFactory();
 
-	//StereoDisplayRef create(const std::string& type);
+	MinVR::framework::StereoDisplayRef create(const std::string& type);
 };
 
 } /* namespace MinVR */
