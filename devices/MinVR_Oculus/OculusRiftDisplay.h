@@ -6,11 +6,18 @@
  * 		Dan Orban (dtorban)
  */
 
+//////////////////////////////////////////////////////////////////////
+//
+// Much of the following code was adapted from the OculusMinimalExample by Brad Davis
+// found at the following URL: https://github.com/jherico/OculusMinimalExample
+//
+
 #ifndef OCULUSRIFTDISPLAY_H_
 #define OCULUSRIFTDISPLAY_H_
 
 #include "framework/StereoDisplay.h"
 #include "MVRCore/AbstractMVRApp.H"
+#include "framework/plugin/PluginFramework.h"
 
 #include <iostream>
 #include <memory>
@@ -113,11 +120,11 @@ struct FramebufferWraper {
   GLuint color{0};
   GLuint depth{ 0 };
 
-  virtual ~FramebufferWraper() {
+  PLUGIN_API virtual ~FramebufferWraper() {
     release();
   }
 
-  void allocate() {
+  PLUGIN_API void allocate() {
     release();
     glGenRenderbuffers(1, &depth);
     assert(depth);
@@ -127,7 +134,7 @@ struct FramebufferWraper {
     assert(fbo);
   }
 
-  void release() {
+  PLUGIN_API void release() {
     if (fbo) {
       glDeleteFramebuffers(1, &fbo);
       fbo = 0;
@@ -142,7 +149,7 @@ struct FramebufferWraper {
     }
   }
 
-  static bool checkStatus(GLenum target = GL_FRAMEBUFFER) {
+  PLUGIN_API static bool checkStatus(GLenum target = GL_FRAMEBUFFER) {
     GLuint status = glCheckFramebufferStatus(target);
     switch (status) {
     case GL_FRAMEBUFFER_COMPLETE:
@@ -185,7 +192,7 @@ struct FramebufferWraper {
     return false;
   }
 
-  void init(const glm::uvec2 & size) {
+  PLUGIN_API void init(const glm::uvec2 & size) {
     this->size = size;
     std::cout << "Size: " << size.x << " " << size.y << " " << std::endl;
     allocate();
@@ -213,7 +220,7 @@ struct FramebufferWraper {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
   }
 
-  void activate() {
+  PLUGIN_API void activate() {
     assert(fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glViewport(0, 0, size.x, size.y);
@@ -222,11 +229,11 @@ struct FramebufferWraper {
 
 class OculusRiftDisplay : public MinVR::framework::StereoDisplay {
 public:
-	OculusRiftDisplay();
-	virtual ~OculusRiftDisplay();
+	PLUGIN_API OculusRiftDisplay();
+	PLUGIN_API virtual ~OculusRiftDisplay();
 
-	void render(int threadId, WindowRef window, AbstractMVRAppRef app);
-	void initializeContextSpecificVars(int threadId, WindowRef window);
+	PLUGIN_API void render(int threadId, WindowRef window, AbstractMVRAppRef app);
+	PLUGIN_API void initializeContextSpecificVars(int threadId, WindowRef window);
 private:
 	ovrHmd _hmd;
 	glm::uvec2 _hmdNativeResolution;
@@ -243,10 +250,10 @@ private:
 
 class OculusRiftDisplayFactory : public MinVR::framework::StereoDisplayDriver {
 public:
-	OculusRiftDisplayFactory();
-	virtual ~OculusRiftDisplayFactory();
+	PLUGIN_API OculusRiftDisplayFactory();
+	PLUGIN_API virtual ~OculusRiftDisplayFactory();
 
-	MinVR::framework::StereoDisplayRef create(const std::string& type);
+	PLUGIN_API MinVR::framework::StereoDisplayRef create(const std::string& type);
 };
 
 } /* namespace MinVR */
