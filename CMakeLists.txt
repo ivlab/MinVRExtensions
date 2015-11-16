@@ -140,7 +140,8 @@ endif()
 #These subdirectories must contain their own CMakeLists.txt
 
 add_subdirectory (devices/MinVR_TUIO)
+add_subdirectory (devices/MinVR_Oculus)
 add_subdirectory (devices/MinVR_vrpn)
-add_subdirectory (test/MinVR_Test)
+#add_subdirectory (test/MinVR_Test)
 
 
