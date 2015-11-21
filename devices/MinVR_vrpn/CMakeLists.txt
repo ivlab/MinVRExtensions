@@ -38,7 +38,7 @@ add_definitions(-DUSE_VRPN)
 # Download dependencies
 #------------------------------------------
 
-		set(vrpn_checkout_Dir ${PROJECT_SOURCE_DIR}/vrpn)
+		set(vrpn_checkout_Dir ${CMAKE_BINARY_DIR}/vrpn)
 		make_directory(${vrpn_checkout_Dir})
         message("   Library will be built from source in ${vrpn_checkout_Dir}.")
 		include(ExternalProject)
@@ -79,6 +79,7 @@ add_definitions(-DUSE_VRPN)
 #------------------------------------------
 include_directories (
   .
+  ../../lib/glm
 )
 # ${MinVR_INCLUDE_DIRS}
 
