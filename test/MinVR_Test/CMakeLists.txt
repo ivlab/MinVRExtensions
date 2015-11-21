@@ -8,7 +8,7 @@ project (MinVR_Test)
 #------------------------------------------
 
 set (SOURCEFILES
-TestPlugin.cpp
+	TestPlugin.cpp
 )
 
 set (HEADERFILES
@@ -41,13 +41,11 @@ if (MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	# Tell MSVC to use main instead of WinMain for Windows subsystem executables
     set_target_properties(${WINDOWS_BINARIES} PROPERTIES LINK_FLAGS "/ENTRY:mainCRTStartup")
-	set(All_LIB ${MinVR_LIBRARIES})
 endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD "c++11")
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")
-    set(All_LIB ${MinVR_LIBRARIES})
 endif()
 
 #------------------------------------------
@@ -75,11 +73,6 @@ endforeach(CONF CMAKE_CONFIGURATION_TYPES)
 # Build Target
 #------------------------------------------
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-if(USE_BOOST)
-	add_dependencies(${PROJECT_NAME} boost MVRCore)
-else()
-	add_dependencies(${PROJECT_NAME} MVRCore)
-endif()
 target_link_libraries(${PROJECT_NAME} ${All_LIB})
 
 #------------------------------------------

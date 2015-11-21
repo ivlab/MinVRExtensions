@@ -6,28 +6,33 @@
  * 		Dan Orban (dtorban)
  */
 
-#include "framework/plugin/Plugin.h"
-#include "log/Logger.h"
+#include "plugin/Plugin.h"
+#include <iostream>
 
-namespace MinVR {
-
-class TestPlugin : public MinVR::framework::plugin::Plugin {
+class TestPlugin : public MinVR::Plugin {
 public:
-	PLUGIN_API TestPlugin() {}
-	PLUGIN_API virtual ~TestPlugin() {}
-	PLUGIN_API bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
+	PLUGIN_API TestPlugin() {
+		std::cout << "TestPlugin created." << std::endl;
+	}
+	PLUGIN_API virtual ~TestPlugin() {
+		std::cout << "TestPlugin destroyed." << std::endl;
+	}
+	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *interface)
 	{
-		MinVR::Logger::getInstance().log("Registering Test Plugin", "TestPlugin", "plugin");
+		std::cout << "Registering TestPlugin with the following interface: " << interface->getName() << std::endl;
+		return true;
+	}
+	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *interface)
+	{
+		std::cout << "Unregistering TestPlugin with the following interface: " << interface->getName() << std::endl;
+
 		return true;
 	}
 };
 
-} /* namespace MinVR_Test */
-
-
 extern "C"
 {
-	PLUGIN_API MinVR::framework::plugin::Plugin* loadPlugin() {
-		return new MinVR::TestPlugin();
+	PLUGIN_API MinVR::Plugin* loadPlugin() {
+		return new TestPlugin();
 	}
 }

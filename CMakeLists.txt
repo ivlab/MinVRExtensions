@@ -9,16 +9,9 @@
 cmake_minimum_required (VERSION 2.8.2) 
 project (MinVRExtensions)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{MinVR_DIR}/cmake/modules")
-
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "$ENV{MinVR_DIR}/plugins" CACHE PATH "default install path" FORCE )
 endif()
-
-if(USE_BOOST)
-	add_definitions(-DUSE_BOOST)
-endif()
-
 
 #This way will auto detect all source files in the directory,
 #while this will work, the preferred technique is to list out
@@ -40,9 +33,14 @@ source_group("Header Files" FILES ${HEADERFILES})
 #find_package method should be used here.
 ############################################################
 
-set(MinVR_DIR $ENV{MinVR_DIR})
-find_package(MinVR COMPONENTS MVRCore AppKit_GLFW REQUIRED)
+if (NOT MinVR_INCLUDE_DIRS)
+	set(MinVR_INCLUDE_DIRS $ENV{MinVR_DIR})
+endif()
+#set(MinVR_DIR $ENV{MinVR_DIR})
+#find_package(MinVR COMPONENTS MVRCore AppKit_GLFW REQUIRED)
+message("${MinVR_INCLUDE_DIRS}")
 include_directories(${MinVR_INCLUDE_DIRS})
+
 
 ############################################################
 #End external library searching
@@ -69,27 +67,6 @@ endif()
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Linux specific code
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
-
-	set(Lib_Config "none")
-	set(MinVR_LIBS)
-	FOREACH (LIB ${MinVR_LIBRARIES})
-	  if("${LIB}" STREQUAL "debug" OR "${LIB}" STREQUAL "optimized")
-	    set(Lib_Config ${LIB})
-	  else()
-	    list(APPEND MinVR_LIBS ${LIB})
-	    if("${Lib_Config}" STREQUAL "debug" OR "${Lib_Config}" STREQUAL "optimized")
-	      list(APPEND MinVR_LIBS ${Lib_Config})
-	    endif()
-	    set(Lib_Config none)
-	  endif()
-	ENDFOREACH(LIB)
-	LIST(REVERSE MinVR_LIBS)
-
-	set(MinVR_LIBRARIES)
-
-	FOREACH (LIB ${MinVR_LIBS})
-	  list(APPEND MinVR_LIBRARIES ${LIB})
-	ENDFOREACH(LIB)	
 
 	find_package(Threads)
 	find_package(X11)
@@ -139,9 +116,9 @@ endif()
 #You can also add subprojects that are in subdirectories
 #These subdirectories must contain their own CMakeLists.txt
 
-add_subdirectory (devices/MinVR_TUIO)
-add_subdirectory (devices/MinVR_Oculus)
-add_subdirectory (devices/MinVR_vrpn)
-#add_subdirectory (test/MinVR_Test)
+#add_subdirectory (devices/MinVR_TUIO)
+#add_subdirectory (devices/MinVR_Oculus)
+#add_subdirectory (devices/MinVR_vrpn)
+add_subdirectory (test/MinVR_Test)
 
 
