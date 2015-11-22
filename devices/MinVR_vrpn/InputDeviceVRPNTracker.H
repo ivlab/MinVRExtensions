@@ -60,10 +60,8 @@ based on tracker data from VRPN.
 #include <glm/gtc/quaternion.hpp>
 #include <vector>
 #include "event/VRInputDevice.h"
-#include "MVRCore/ConfigMap.H"
-#include "MVRCore/StringUtils.H"
-#include "MVRCore/Time.h"
-#include <log/Logger.h>
+#include "data/VRDataIndex.h"
+#include "VrpnTime.h"
 #include "plugin/PluginFramework.h"
 
 #ifdef USE_VRPN
@@ -108,7 +106,7 @@ namespace MinVR {
 	column, so it would become (0,1,0,Y[1]).  If it were (0,-1,0,0),
 	you would need to put (0,-1,0,-Y[1]).
 	*/
-class InputDeviceVRPNTracker : public MinVR::framework::InputDevice
+class InputDeviceVRPNTracker : public VRInputDevice
 {
 public:
 #ifdef USE_VRPN
@@ -123,13 +121,13 @@ public:
 		const bool									   &convertLHtoRH = false,
 		const bool									   &ignoreZeroes = false);
 
-	PLUGIN_API InputDeviceVRPNTracker(const std::string name, const ConfigMapRef map);
+	PLUGIN_API InputDeviceVRPNTracker(const std::string name, VRDataIndex& map);
 
 	PLUGIN_API virtual ~InputDeviceVRPNTracker();
 
 	PLUGIN_API void processEvent(const glm::dmat4 &vrpnEvent, int sensorNum, const TimeStamp &msg_time);
 	PLUGIN_API std::string getEventName(int trackerNumber);
-	PLUGIN_API void pollForInput(std::vector<EventRef> &events);
+	PLUGIN_API void appendNewInputEventsSinceLastCall(std::vector<VREvent> &events);
 	PLUGIN_API void setPrintSensor0(bool b) { _printSensor0 = b; }
 
 private:
@@ -145,7 +143,7 @@ private:
 	bool                    _convertLHtoRH;
 	bool                    _ignoreZeroes;
 	bool                    _newReportFlag;
-	std::vector<EventRef>         _pendingEvents;
+	std::vector<VREvent>         _pendingEvents;
 #else
 	PLUGIN_API InputDeviceVRPNTracker(
 		const std::string							   &vrpnTrackerDeviceName,
@@ -158,16 +156,16 @@ private:
 		const bool									   &convertLHtoRH = false,
 		const bool									   &ignoreZeroes = false)
 	{
-		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
+		//MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 
 	PLUGIN_API InputDeviceVRPNTracker(const std::string name, const ConfigMapRef map)
 	{
-		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
+		//MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 
 	PLUGIN_API virtual ~InputDeviceVRPNTracker() {}
-	PLUGIN_API void pollForInput(std::vector<EventRef> &events) {}
+	PLUGIN_API void appendNewInputEventsSinceLastCall(std::vector<VREvent> &events) {}
 
 #endif // USE_VRPN
 };

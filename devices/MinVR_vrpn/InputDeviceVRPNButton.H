@@ -107,7 +107,7 @@ private:
 	}
 
 	PLUGIN_API virtual ~InputDeviceVRPNButton() {}
-	PLUGIN_API void pollForInput(std::vector<VREvent> &events) {}
+	PLUGIN_API void appendNewInputEventsSinceLastCall(std::vector<VREvent> &events) {}
 #endif // USE_VRPN defined
 };
 

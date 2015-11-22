@@ -99,18 +99,36 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker(
 	_vrpnDevice = new vrpn_Tracker_Remote(vrpnTrackerDeviceName.c_str());
 	std::stringstream ss;
 	ss << "Can't create VRPN Remote Tracker with name " + vrpnTrackerDeviceName;
-	MinVR::Logger::getInstance().assertMessage(_vrpnDevice, ss.str().c_str());
+	std::cout << ss.str() << std::endl;
+	//MinVR::Logger::getInstance().assertMessage(_vrpnDevice, ss.str().c_str());
 	_vrpnDevice->register_change_handler(this, trackerHandler);
 }
 
-InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, const ConfigMapRef map)
-{
-	std::string vrpnname  = map->get( name + "_InputDeviceVRPNTrackerName", "" );
-	std::string eventsStr = map->get( name + "_EventsToGenerate", "" );
-	std::vector<std::string> events = splitStringIntoArray(eventsStr);
+inline glm::dmat4 toGlm(const VRDoubleArray& m) {
+	return glm::dmat4(m[0], m[1], m[2], m[3],
+					  m[4], m[5], m[6], m[7],
+					  m[8], m[9], m[10], m[11],
+					  m[12], m[13], m[14], m[15]);
+}
 
-	double scale = map->get( name + "_TrackerUnitsToRoomUnitsScale", 1.0 );
-	glm::dmat4 d2r = map->get( name + "_DeviceToRoom", glm::dmat4(1.0) );
+inline VRDoubleArray fromGlm(const glm::dmat4 & m) {
+	VRDoubleArray a;
+	for (int f = 0; f < 4; f++)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			a.push_back(m[f][i]);
+		}
+	}
+}
+
+InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, VRDataIndex& map)
+{
+	std::string vrpnname  = map.getValue( name + "_InputDeviceVRPNTrackerName" );
+	std::vector<std::string> events = map.getValue( name + "_EventsToGenerate" );
+
+	double scale = map.getValue( name + "_TrackerUnitsToRoomUnitsScale" );
+	glm::dmat4 d2r = toGlm(map.getValue( name + "_DeviceToRoom" ));
 	
 	// orthonormalize
 	glm::dmat3 rot(d2r[0][0], d2r[0][1], d2r[0][2],
@@ -132,7 +150,7 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, const Co
 
 	for (int  i = 0; i < events.size(); i++)
 	{
-		glm::dmat4 cf = map->get(events[i] + "_PropToTracker", glm::dmat4(1.0));
+		glm::dmat4 cf = toGlm(map.getValue(events[i] + "_PropToTracker"));
 		glm::dmat3 rot(cf[0][0], cf[0][1], cf[0][2],
 				  cf[1][0], cf[1][1], cf[1][2],
 				  cf[2][0], cf[2][1], cf[2][2]);
@@ -148,7 +166,7 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, const Co
 		cf[2][2] = rot[2][2];
 
 		p2t.push_back(cf);
-		glm::dmat4 cf2 = map->get(events[i] + "_FinalOffset", glm::dmat4(1.0));
+		glm::dmat4 cf2 = toGlm(map.getValue(events[i] + "_FinalOffset"));
 		glm::dmat3 rot2(cf2[0][0], cf2[0][1], cf2[0][2],
 				  cf2[1][0], cf2[1][1], cf2[1][2],
 				  cf2[2][0], cf2[2][1], cf2[2][2]);
@@ -165,11 +183,12 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, const Co
 		fo.push_back(cf2);
 	}
 
-	bool wait          = map->get( name + "_WaitForNewReportInPoll", false );
-	bool convertLHtoRH = map->get( name + "_ConvertLHtoRH", false );
-	bool ignoreZeroes  = map->get( name + "_IgnoreZeroes", false );
+	bool wait          = ((int)map.getValue( name + "_WaitForNewReportInPoll")) == 1;
+	bool convertLHtoRH = ((int)map.getValue( name + "_ConvertLHtoRH")) == 1;
+	bool ignoreZeroes  = ((int)map.getValue( name + "_IgnoreZeroes")) == 1;
 
-	MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNTracker (") + vrpnname + ")", "Tag", "MinVR Core");
+	//MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNTracker (") + vrpnname + ")", "Tag", "MinVR Core");
+	std::cout << std::string("Creating new InputDeviceVRPNTracker (") + vrpnname + ")" << std::endl;
 
 	_eventNames                   = events;
 	_trackerUnitsToRoomUnitsScale = scale;
@@ -185,7 +204,8 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, const Co
 	_vrpnDevice = new vrpn_Tracker_Remote(vrpnname.c_str(), _vrpnConnection);
 	std::stringstream ss;
 	ss <<  "Can't create VRPN Remote Tracker with name " + vrpnname;
-	MinVR::Logger::getInstance().assertMessage(_vrpnDevice, ss.str().c_str());
+	//MinVR::Logger::getInstance().assertMessage(_vrpnDevice, ss.str().c_str());
+	std::cout << ss.str() << std::endl;
 	_vrpnDevice->register_change_handler(this, trackerHandler);
 }
 
@@ -248,9 +268,12 @@ void InputDeviceVRPNTracker::processEvent(const glm::dmat4 &vrpnEvent, int senso
 
 	if ((_printSensor0) && (sensorNum == 0)) {
 		glm::dvec4 translation = glm::column(eventRoom, 3);
-		std::cout << translation << std::endl;
+		//std::cout << translation << std::endl;
 	}
-	_pendingEvents.push_back(EventRef(new Event(getEventName(sensorNum), eventRoom, nullptr, sensorNum, msg_time)));
+
+	VRDataIndex di;
+	di.addData("EventRoom", fromGlm(eventRoom));
+	_pendingEvents.push_back(VREvent(getEventName(sensorNum), di));
 }
 
 std::string InputDeviceVRPNTracker::getEventName(int trackerNumber)
@@ -261,7 +284,7 @@ std::string InputDeviceVRPNTracker::getEventName(int trackerNumber)
 		return _eventNames[trackerNumber];
 }
 
-void InputDeviceVRPNTracker::pollForInput(std::vector<EventRef> &events)
+void InputDeviceVRPNTracker::appendNewInputEventsSinceLastCall(std::vector<VREvent> &events)
 {
 	// If this poll routine isn't called fast enough then the UDP buffer can fill up and
 	// the most recent tracker records will be dropped, introducing lag in the system.
