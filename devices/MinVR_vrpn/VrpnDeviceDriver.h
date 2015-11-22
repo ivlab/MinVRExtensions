@@ -15,12 +15,12 @@
 
 namespace MinVR {
 
-class VrpnDeviceDriver : public MinVR::framework::InputDeviceDriver {
+class VrpnDeviceDriver : public VRInputDeviceDriver {
 public:
 	PLUGIN_API VrpnDeviceDriver();
 	PLUGIN_API virtual ~VrpnDeviceDriver();
 
-	PLUGIN_API MinVR::framework::InputDeviceRef create(const std::string &type, const std::string& name, ConfigMapRef config);
+	PLUGIN_API VRInputDevice* create(const std::string &type, const std::string& name, VRDataIndex& config);
 };
 
 } /* namespace MinVR */

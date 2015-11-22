@@ -6,41 +6,10 @@
  * 		Dan Orban (dtorban)
  */
 
-/*#include "framework/plugin/Plugin.h"
-#include "log/Logger.h"
-#include "VrpnDeviceDriver.h"
-#include "framework/plugin/PluginFramework.h"
-
-namespace MinVR {
-
-using namespace MinVR::framework;
-using namespace MinVR::framework::plugin;
-
-class VrpnPlugin : public MinVR::framework::plugin::Plugin {
-public:
-	PLUGIN_API VrpnPlugin() {}
-	PLUGIN_API virtual ~VrpnPlugin() {}
-	PLUGIN_API bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
-	{
-		MinVR::Logger::getInstance().log("Registering vrpn Plugin", "TUIOPlugin", "plugin");
-		interface->getInterface<MinVRInterface>()->addInputDeviceDriver(InputDeviceDriverRef(new VrpnDeviceDriver()));
-		MinVR::Logger::getInstance().log("Registering vrpn Plugin Complete", "TUIOPlugin", "plugin");
-		return true;
-	}
-};
-
-} /* namespace MinVR_Test
-
-
-extern "C"
-{
-	PLUGIN_API MinVR::framework::plugin::Plugin* loadPlugin() {
-		return new MinVR::VrpnPlugin();
-	}
-} */
-
 #include "plugin/Plugin.h"
 #include <iostream>
+#include "event/VRInputDevice.h"
+#include "VrpnDeviceDriver.h"
 
 namespace MinVR {
 
@@ -52,15 +21,21 @@ public:
 	PLUGIN_API virtual ~VrpnPlugin() {
 		std::cout << "VrpnPlugin destroyed." << std::endl;
 	}
-	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *interface)
+	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *iface)
 	{
-		std::cout << "Registering VrpnPlugin with the following interface: " << interface->getName() << std::endl;
-		return true;
-	}
-	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *interface)
-	{
-		std::cout << "Unregistering VrpnPlugin with the following interface: " << interface->getName() << std::endl;
+		VRInputDeviceInterface* inputDeviceInterface = iface->getInterface<VRInputDeviceInterface>();
+		if (inputDeviceInterface != NULL)
+		{
+			std::cout << "Registering VrpnPlugin with the following interface: " << iface->getName() << std::endl;
+			inputDeviceInterface->addInputDeviceDriver(new VrpnDeviceDriver());
+			return true;
+		}
 
+		return false;
+	}
+	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *iface)
+	{
+		std::cout << "Unregistering VrpnPlugin with the following interface: " << iface->getName() << std::endl;
 		return true;
 	}
 };

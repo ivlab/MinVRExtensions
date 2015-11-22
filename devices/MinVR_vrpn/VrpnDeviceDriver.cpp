@@ -23,16 +23,16 @@ VrpnDeviceDriver::~VrpnDeviceDriver() {
 	// TODO Auto-generated destructor stub
 }
 
-framework::InputDeviceRef VrpnDeviceDriver::create(const std::string &type, const std::string& name, ConfigMapRef config) {
+VRInputDevice* VrpnDeviceDriver::create(const std::string &type, const std::string& name, VRDataIndex& config) {
 
 	if (type == "InputDeviceVRPNAnalog") {
-		return framework::InputDeviceRef(new InputDeviceVRPNAnalog(name, config));
+		return new InputDeviceVRPNAnalog(name, config);
 	}
 	else if (type == "InputDeviceVRPNButton") {
-		return framework::InputDeviceRef(new InputDeviceVRPNButton(name, config));
+		return new InputDeviceVRPNButton(name, config);
 	}
 	else if (type == "InputDeviceVRPNTracker") {
-		return framework::InputDeviceRef(new InputDeviceVRPNTracker(name, config));
+		return new InputDeviceVRPNTracker(name, config);
 	}
 
 	return NULL;
