@@ -59,12 +59,12 @@ based on tracker data from VRPN.
 #include <glm/gtx/orthonormalize.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <vector>
-#include "framework/InputDevice.h"
+#include "event/VRInputDevice.h"
 #include "MVRCore/ConfigMap.H"
 #include "MVRCore/StringUtils.H"
 #include "MVRCore/Time.h"
 #include <log/Logger.h>
-#include "framework/plugin/PluginFramework.h"
+#include "plugin/PluginFramework.h"
 
 #ifdef USE_VRPN
 class vrpn_Tracker_Remote;

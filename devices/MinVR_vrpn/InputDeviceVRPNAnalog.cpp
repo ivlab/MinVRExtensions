@@ -48,8 +48,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // Note: This include ordering is important, don't screw with it!
 #include "InputDeviceVRPNAnalog.H"
-#include "MVRCore/Event.H"
+//#include "MVRCore/Event.H"
 #include <vrpn_Analog.h>
+#include <iostream>
 
 
 #ifndef VRPN_CALLBACK
@@ -78,20 +79,21 @@ InputDeviceVRPNAnalog::InputDeviceVRPNAnalog(const std::string &vrpnAnalogDevice
 	if (!_vrpnDevice) {
 		std::stringstream ss;
 		ss << "Can't create VRPN Remote Analog with name" + vrpnAnalogDeviceName;
-		MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
+		std::cout << ss.str() << std::endl;
+		//MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
 	}
 
 	_vrpnDevice->register_change_handler(this, analogHandler);
 }
 
-InputDeviceVRPNAnalog::InputDeviceVRPNAnalog(const std::string name, const ConfigMapRef map)
+InputDeviceVRPNAnalog::InputDeviceVRPNAnalog(const std::string name, VRDataIndex& map)
 {
-	std::string  vrpnname = map->get( name + "_InputDeviceVRPNAnalogName", "" );
-	std::string  events   = map->get( name + "_EventsToGenerate", "" );
+	std::string  vrpnname = map.getValue( name + "_InputDeviceVRPNAnalogName" );
+	_eventNames   = map.getValue( name + "_EventsToGenerate" );
 
-	MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNAnalog (") + vrpnname + ")", "Tag", "MinVR Core");
+	//MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNAnalog (") + vrpnname + ")", "Tag", "MinVR Core");
+	std::cout << std::string("Creating new InputDeviceVRPNAnalog (") + vrpnname + ")" << std::endl;
 
-	_eventNames = splitStringIntoArray( events );
 	for (int i=0;i<_eventNames.size();i++) { 
 		_channelValues.push_back(0.0);
 	}
@@ -100,7 +102,8 @@ InputDeviceVRPNAnalog::InputDeviceVRPNAnalog(const std::string name, const Confi
 	if (!_vrpnDevice) { 
 		std::stringstream ss;
 		ss << "Can't create VRPN Remote Analog with name" + vrpnname;
-		MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
+		std::cout << ss.str() << std::endl;
+		//MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
 	}
 
 	_vrpnDevice->register_change_handler(this, analogHandler);
@@ -123,12 +126,15 @@ std::string	InputDeviceVRPNAnalog::getEventName(int channelNumber)
 void InputDeviceVRPNAnalog::sendEventIfChanged(int channelNumber, double data, const TimeStamp &msg_time)
 {
 	if (_channelValues[channelNumber] != data) {
-		_pendingEvents.push_back(EventRef(new Event(_eventNames[channelNumber], data, nullptr, channelNumber, msg_time)));
+		//_pendingEvents.push_back(EventRef(new Event(_eventNames[channelNumber], data, nullptr, channelNumber, msg_time)));
+		VRDataIndex di;
+		di.addData("Analog", data);
+		_pendingEvents.push_back(VREvent(_eventNames[channelNumber], di));
 		_channelValues[channelNumber] = data;
 	}
 }
 
-void InputDeviceVRPNAnalog::pollForInput(std::vector<EventRef> &events)
+void InputDeviceVRPNAnalog::appendNewInputEventsSinceLastCall(std::vector<VREvent> &events)
 {
 	_vrpnDevice->mainloop();
 	if (_pendingEvents.size()) {

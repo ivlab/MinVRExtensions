@@ -10,8 +10,8 @@
 #ifndef VRPNDEVICEFACTORY_H_
 #define VRPNDEVICEFACTORY_H_
 
-#include "framework/InputDevice.h"
-#include "framework/plugin/PluginFramework.h"
+#include "event/VRInputDevice.h"
+#include "plugin/PluginFramework.h"
 
 namespace MinVR {
 
