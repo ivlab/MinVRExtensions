@@ -50,6 +50,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Note: This include ordering is important, don't screw with it!
 #include "InputDeviceVRPNButton.H"
 #include <vrpn_Button.h>
+#include <iostream>
 
 
 #ifndef VRPN_CALLBACK
@@ -76,26 +77,27 @@ InputDeviceVRPNButton::InputDeviceVRPNButton(const std::string &vrpnButtonDevice
 	if (!_vrpnDevice) {
 		std::stringstream ss;
 		ss << "Can't create VRPN Remote Button with name " + vrpnButtonDeviceName;
-		MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
+		std::cout << ss.str() << std::endl;
+		//MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
 	}
 
 	_vrpnDevice->register_change_handler(this, buttonHandler);
 }
 
-InputDeviceVRPNButton::InputDeviceVRPNButton(const std::string name, const ConfigMapRef map)
+InputDeviceVRPNButton::InputDeviceVRPNButton(const std::string name, VRDataIndex& map)
 {
-	std::string vrpnname = map->get( name + "_InputDeviceVRPNButtonName", "" );
-	std::string events   = map->get( name + "_EventsToGenerate","" );
+	std::string vrpnname = map.getValue( name + "_InputDeviceVRPNButtonName" );
+	_eventNames   = map.getValue( name + "_EventsToGenerate" );
 
-	MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNButton (") + vrpnname + ")", "Tag", "MinVR Core");
-
-	_eventNames = splitStringIntoArray( events );
+	//MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNButton (") + vrpnname + ")", "Tag", "MinVR Core");
+	std::cout << std::string("Creating new InputDeviceVRPNButton (") + vrpnname + ")" << std::endl;
 
 	_vrpnDevice = new vrpn_Button_Remote(vrpnname.c_str());
 	if (!_vrpnDevice) {
 		std::stringstream ss;
 		ss << "Can't create VRPN Remote Button with name " + vrpnname;
-		MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
+		std::cout << ss.str() << std::endl;
+		//MinVR::Logger::getInstance().assertMessage(false, ss.str().c_str());
 	}
 
 	_vrpnDevice->register_change_handler(this, buttonHandler);
@@ -118,15 +120,17 @@ std::string InputDeviceVRPNButton::getEventName(int buttonNumber)
 void InputDeviceVRPNButton::sendEvent(int buttonNumber, bool down, const TimeStamp &msg_time)
 {
 	std::string ename = getEventName(buttonNumber);
+	VRDataIndex di;
+	di.addData("id", buttonNumber);
 	if (down) {
-		_pendingEvents.push_back(EventRef(new Event(ename + "_down", nullptr, buttonNumber, msg_time)));
+		_pendingEvents.push_back(VREvent(ename + "_down", di));
 	}
 	else {
-		_pendingEvents.push_back(EventRef(new Event(ename + "_up", nullptr, buttonNumber, msg_time)));
+		_pendingEvents.push_back(VREvent(ename + "_up", di));
 	}
 }
 
-void InputDeviceVRPNButton::pollForInput(std::vector<EventRef> &events)
+void InputDeviceVRPNButton::appendNewInputEventsSinceLastCall(std::vector<VREvent> &events)
 {
 	_vrpnDevice->mainloop();
 	if (_pendingEvents.size()) {

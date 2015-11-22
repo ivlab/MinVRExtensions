@@ -66,10 +66,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 
 #include "event/VRInputDevice.h"
-#include "MVRCore/ConfigMap.H"
-
-#include "MVRCore/Time.h"
-#include <log/Logger.h>
+#include "data/VRDataIndex.h"
+#include "VrpnTime.h"
 #include "plugin/PluginFramework.h"
 
 #ifdef USE_VRPN
@@ -80,16 +78,16 @@ namespace MinVR {
 
 /**
 */
-class InputDeviceVRPNButton : public MinVR::framework::InputDevice
+class InputDeviceVRPNButton : public VRInputDevice
 {
 public:
 #ifdef USE_VRPN
 	PLUGIN_API InputDeviceVRPNButton(const std::string &vrpnButtonDeviceName, const std::vector<std::string> &eventsToGenerate);
-	PLUGIN_API InputDeviceVRPNButton(const std::string name, const ConfigMapRef map);
+	PLUGIN_API InputDeviceVRPNButton(const std::string name, VRDataIndex& map);
 
 	PLUGIN_API virtual ~InputDeviceVRPNButton();
 
-	PLUGIN_API void pollForInput(std::vector<EventRef> &events);
+	PLUGIN_API void appendNewInputEventsSinceLastCall(std::vector<VREvent> &events);
 
 	PLUGIN_API std::string getEventName(int buttonNumber);
 	PLUGIN_API void sendEvent(int buttonNumber, bool down, const TimeStamp &msg_time);
@@ -97,19 +95,19 @@ public:
 private:
 	vrpn_Button_Remote  *_vrpnDevice;
 	std::vector<std::string>   _eventNames;
-	std::vector<EventRef>      _pendingEvents;
+	std::vector<VREvent>      _pendingEvents;
 #else
 	PLUGIN_API InputDeviceVRPNButton(const std::string &vrpnButtonDeviceName, const std::vector<std::string> &eventsToGenerate)
 	{
-		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
+		//MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 	PLUGIN_API InputDeviceVRPNButton(const std::string name, const ConfigMapRef map)
 	{
-		MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
+		//MinVR::Logger::getInstance().assertMessage(false, "VRPN is currently unsupported. Set cmake option USE_VRPN to ON and recompile.");
 	}
 
 	PLUGIN_API virtual ~InputDeviceVRPNButton() {}
-	PLUGIN_API void pollForInput(std::vector<EventRef> &events) {}
+	PLUGIN_API void pollForInput(std::vector<VREvent> &events) {}
 #endif // USE_VRPN defined
 };
 
