@@ -120,6 +120,8 @@ inline VRDoubleArray fromGlm(const glm::dmat4 & m) {
 			a.push_back(m[f][i]);
 		}
 	}
+
+	return a;
 }
 
 InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, VRDataIndex& map)

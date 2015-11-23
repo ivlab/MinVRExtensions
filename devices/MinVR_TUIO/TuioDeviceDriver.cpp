@@ -9,7 +9,6 @@
 
 #include <TuioDeviceDriver.h>
 #include "InputDeviceTUIOClient.H"
-#include "framework/plugin/PluginFramework.h"
 
 namespace MinVR {
 
@@ -22,11 +21,11 @@ TuioDeviceDriver::~TuioDeviceDriver() {
 	// TODO Auto-generated destructor stub
 }
 
-framework::InputDeviceRef TuioDeviceDriver::create(const std::string &type, const std::string& name, ConfigMapRef config) {
-
+VRInputDevice* TuioDeviceDriver::create(const std::string &type, const std::string& name, VRDataIndex& config)
+{
 	if (type == "InputDeviceTUIOClient")
 	{
-		return framework::InputDeviceRef(new InputDeviceTUIOClient(name, config));
+		return new InputDeviceTUIOClient(name, config);
 	}
 
 	return NULL;

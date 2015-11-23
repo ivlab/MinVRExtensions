@@ -9,10 +9,8 @@
 
 #include "InputDeviceTUIOClient.H"
 
-#include "MVRCore/StringUtils.H"
-#include "MVRCore/ConfigMap.H"
 #include <list>
-#include "framework/plugin/PluginFramework.h"
+#include <sstream>
 
 namespace MinVR {
 
@@ -35,11 +33,11 @@ InputDeviceTUIOClient::InputDeviceTUIOClient(int port, double xScale, double ySc
 
 
 
-InputDeviceTUIOClient::InputDeviceTUIOClient(const std::string name, const ConfigMapRef map)
+InputDeviceTUIOClient::InputDeviceTUIOClient(const std::string name, VRDataIndex& map )
 {
-	int  port = map->get( name + "_Port", TUIO_PORT );
-	double xs = map->get( name + "_XScaleFactor", 1.0 );
-	double ys = map->get( name + "_YScaleFactor", 1.0 );
+	int  port = map.getValue( name + "_Port" );
+	double xs = map.getValue( name + "_XScaleFactor" );
+	double ys = map.getValue( name + "_YScaleFactor" );
 
 	_xScale = xs;
 	_yScale = ys;
@@ -60,7 +58,23 @@ InputDeviceTUIOClient::~InputDeviceTUIOClient()
 	}
 }
 
-void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
+inline std::string	intToString(int i)
+{
+	std::ostringstream ostr;
+	// if using strstream rather than stringstream, the following call
+	// requires a   << "\0"   at the end.
+	ostr << i;
+	return std::string(ostr.str());
+}
+
+inline VRDoubleArray fromGlm(const glm::dvec2 & v) {
+	VRDoubleArray a;
+	a.push_back(v.x);
+	a.push_back(v.y);
+	return a;
+}
+
+void InputDeviceTUIOClient::appendNewInputEventsSinceLastCall(std::vector<VREvent> &events)
 {
 	// Send out events for TUIO "cursors" by polling the TuioClient for the current state  
 	std::list<TuioCursor*> cursorList = _tuioClient->getTuioCursors();
@@ -78,7 +92,11 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 			}
 		}
 		if (!stillDown) {
-			events.push_back(EventRef(new Event("Touch_Cursor_Up" + intToString(*downLast_it), nullptr, *downLast_it)));
+
+			VRDataIndex di;
+			di.addData("id", *downLast_it);
+
+			events.push_back(VREvent("Touch_Cursor_Up", di));
 			toErase.push_back(*downLast_it);
 		}
 	}
@@ -93,13 +111,21 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 		glm::dvec2 pos = glm::dvec2(_xScale*tcur->getX(), _yScale*tcur->getY());
 
 		if (_cursorsDown.find(tcur->getCursorID()) == _cursorsDown.end()) {
-			events.push_back(EventRef(new Event("Touch_Cursor_Down" + intToString(tcur->getCursorID()), pos, nullptr, tcur->getCursorID())));
+			VRDataIndex di;
+			di.addData("id", tcur->getCursorID());
+			di.addData("pos", fromGlm(pos));
+			events.push_back(VREvent("Touch_Cursor_Down", di));
 			_cursorsDown.insert(tcur->getCursorID());
 		}
 
 		if (tcur->getMotionSpeed() > 0.0) {
+			VRDataIndex di;
+			di.addData("id", tcur->getCursorID());
+			di.addData("pos", fromGlm(pos));
+			di.addData("speed", tcur->getMotionSpeed());
+			di.addData("acc", tcur->getMotionAccel());
 			glm::dvec4 data = glm::dvec4(pos, tcur->getMotionSpeed(), tcur->getMotionAccel());
-			events.push_back(EventRef(new Event("Touch_Cursor_Move" + intToString(tcur->getCursorID()), data, nullptr, tcur->getCursorID())));
+			events.push_back(VREvent("Touch_Cursor_Move", di));
 		}
 
 		// Can also access several other properties of cursors (speed, acceleration, path followed, etc.)
@@ -128,8 +154,14 @@ void InputDeviceTUIOClient::pollForInput(std::vector<EventRef> &events)
 		double ypos  = _yScale*tuioObject->getY();
 		double angle = tuioObject->getAngle()/M_PI*180.0;
 
+		VRDataIndex di;
+		di.addData("id", id);
+		di.addData("xpos", xpos);
+		di.addData("ypos", ypos);
+		di.addData("angle", angle);
+
 		std::string name = "TUIO_Obj" + intToString(id);
-		events.push_back(EventRef(new Event(name, glm::dvec3(xpos, ypos, angle))));
+		events.push_back(VREvent(name, di));
 	}
 	_tuioClient->unlockObjectList();
 }

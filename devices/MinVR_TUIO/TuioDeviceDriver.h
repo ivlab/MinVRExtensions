@@ -10,19 +10,20 @@
 #ifndef TUIODEVICEFACTORY_H_
 #define TUIODEVICEFACTORY_H_
 
-#include "framework/InputDevice.h"
-#include "framework/plugin/PluginFramework.h"
+#include "event/VRInputDevice.h"
+#include "plugin/PluginFramework.h"
 
 namespace MinVR {
 
-class TuioDeviceDriver : public MinVR::framework::InputDeviceDriver {
+class TuioDeviceDriver : public VRInputDeviceDriver {
 public:
 	PLUGIN_API TuioDeviceDriver();
 	PLUGIN_API virtual ~TuioDeviceDriver();
 
-	PLUGIN_API MinVR::framework::InputDeviceRef create(const std::string &type, const std::string& name, ConfigMapRef config);
+	PLUGIN_API VRInputDevice* create(const std::string &type, const std::string& name, VRDataIndex& config);
 };
 
 } /* namespace MinVR */
+
 
 #endif /* TUIODEVICEFACTORY_H_ */

@@ -38,7 +38,8 @@ source_group("Header Files" FILES ${HEADERFILES})
 # Download dependencies
 #------------------------------------------
 
-	set(tuio_checkout_Dir ${PROJECT_SOURCE_DIR}/tuio)
+	set(tuio_checkout_Dir ${PROJECT_BINARY_DIR}/tuio)
+	set(tuio_patch_Dir ${PROJECT_SOURCE_DIR}/tuio)
 	make_directory(${tuio_checkout_Dir})
     message("   Library will be built from source in ${tuio_checkout_Dir}.")
 	include(ExternalProject)
@@ -46,7 +47,7 @@ source_group("Header Files" FILES ${HEADERFILES})
 	set(tuio_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/tuio")
 	set(tuio_CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX=${tuio_INSTALL_DIR}")
 	set(tuio_DIR "${tuio_INSTALL_DIR}")
-	set(tuio_PATCH ${CMAKE_COMMAND} -E copy ${tuio_checkout_Dir}/CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt && ${CMAKE_COMMAND} -E copy ${tuio_checkout_Dir}/TuioServer.cpp <SOURCE_DIR>/TUIO/TuioServer.cpp)
+	set(tuio_PATCH ${CMAKE_COMMAND} -E copy ${tuio_patch_Dir}/CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt && ${CMAKE_COMMAND} -E copy ${tuio_patch_Dir}/TuioServer.cpp <SOURCE_DIR>/TUIO/TuioServer.cpp)
 
 	if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 		set(tuio_CMAKE_ARGS ${tuio_CMAKE_ARGS} -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LANGUAGE_STANDARD=c++11 -DCMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY=libc++)
@@ -78,6 +79,7 @@ source_group("Header Files" FILES ${HEADERFILES})
 #------------------------------------------
 include_directories (
   .
+  ../../lib/glm
 )
 
 #------------------------------------------
@@ -127,12 +129,8 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-if(USE_BOOST)
-	add_dependencies(${PROJECT_NAME} boost TUIO MVRCore)
-else()
-	add_dependencies(${PROJECT_NAME} TUIO MVRCore)
-endif()
-target_link_libraries(${PROJECT_NAME} ${TUIO_LIBRARY} ${All_LIB})
+add_dependencies(${PROJECT_NAME} TUIO VREvent)
+#target_link_libraries(${PROJECT_NAME} ${TUIO_LIBRARY} VREvent ${All_LIB})
 
 #------------------------------------------
 # Install Target

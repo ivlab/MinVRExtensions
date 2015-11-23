@@ -6,34 +6,45 @@
  * 		Dan Orban (dtorban)
  */
 
-#include "framework/plugin/Plugin.h"
-#include "log/Logger.h"
+#include "plugin/Plugin.h"
+#include <iostream>
+#include "event/VRInputDevice.h"
 #include "TuioDeviceDriver.h"
 
 namespace MinVR {
 
-using namespace MinVR::framework;
-using namespace MinVR::framework::plugin;
-
-class TUIOPlugin : public MinVR::framework::plugin::Plugin {
+class TUIOPlugin : public MinVR::Plugin {
 public:
-	PLUGIN_API TUIOPlugin() {}
-	PLUGIN_API virtual ~TUIOPlugin() {}
-	PLUGIN_API bool registerPlugin(MinVR::framework::plugin::PluginInterface *interface)
+	PLUGIN_API TUIOPlugin() {
+		std::cout << "TUIOPlugin created." << std::endl;
+	}
+	PLUGIN_API virtual ~TUIOPlugin() {
+		std::cout << "TUIOPlugin destroyed." << std::endl;
+	}
+	PLUGIN_API bool registerPlugin(MinVR::PluginInterface *iface)
 	{
-		MinVR::Logger::getInstance().log("Registering TUIO Plugin", "TUIOPlugin", "plugin");
-		interface->getInterface<MinVRInterface>()->addInputDeviceDriver(InputDeviceDriverRef(new TuioDeviceDriver()));
-		MinVR::Logger::getInstance().log("Registering TUIO Plugin Complete", "TUIOPlugin", "plugin");
+		VRInputDeviceInterface* inputDeviceInterface = iface->getInterface<VRInputDeviceInterface>();
+		if (inputDeviceInterface != NULL)
+		{
+			std::cout << "Registering TUIOPlugin with the following interface: " << iface->getName() << std::endl;
+			inputDeviceInterface->addInputDeviceDriver(new TuioDeviceDriver());
+			return true;
+		}
+
+		return false;
+	}
+	PLUGIN_API bool unregisterPlugin(MinVR::PluginInterface *iface)
+	{
+		std::cout << "Unregistering TUIOPlugin with the following interface: " << iface->getName() << std::endl;
 		return true;
 	}
 };
 
-} /* namespace MinVR_Test */
-
+}
 
 extern "C"
 {
-	PLUGIN_API MinVR::framework::plugin::Plugin*loadPlugin() {
+	PLUGIN_API MinVR::Plugin* loadPlugin() {
 		return new MinVR::TUIOPlugin();
 	}
 }
