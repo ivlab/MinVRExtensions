@@ -134,11 +134,7 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
-if(USE_BOOST)
-	add_dependencies(${PROJECT_NAME} boost vrpn MVRCore)
-else()
-	add_dependencies(${PROJECT_NAME} vrpn MVRCore)
-endif()
+add_dependencies(${PROJECT_NAME} vrpn VREvent)
 target_link_libraries(${PROJECT_NAME} ${VRPN_LIBRARY} ${All_LIB})
 
 #------------------------------------------
