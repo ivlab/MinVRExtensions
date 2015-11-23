@@ -131,6 +131,7 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
 add_dependencies(${PROJECT_NAME} TUIO VREvent)
 #target_link_libraries(${PROJECT_NAME} ${TUIO_LIBRARY} VREvent ${All_LIB})
+target_link_libraries(${PROJECT_NAME} ${TUIO_LIBRARY} ${All_LIB})
 
 #------------------------------------------
 # Install Target
