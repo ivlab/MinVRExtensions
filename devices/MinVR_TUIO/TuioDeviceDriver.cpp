@@ -23,7 +23,11 @@ TuioDeviceDriver::~TuioDeviceDriver() {
 
 VRInputDevice* TuioDeviceDriver::create(const std::string &type, const std::string& name, VRDataIndex& config)
 {
-	if (type == "InputDeviceTUIOClient")
+	if (type == "BasicTUIOClient")
+	{
+		return new InputDeviceTUIOClient(name);
+	}
+	else if (type == "InputDeviceTUIOClient")
 	{
 		return new InputDeviceTUIOClient(name, config);
 	}

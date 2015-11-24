@@ -18,7 +18,7 @@ namespace MinVR {
 
 using namespace TUIO;
 
-InputDeviceTUIOClient::InputDeviceTUIOClient(int port, double xScale, double yScale)
+InputDeviceTUIOClient::InputDeviceTUIOClient(const std::string name, int port, double xScale, double yScale) : _name(name)
 {
 	_xScale = xScale;
 	_yScale = yScale;
@@ -33,7 +33,7 @@ InputDeviceTUIOClient::InputDeviceTUIOClient(int port, double xScale, double ySc
 
 
 
-InputDeviceTUIOClient::InputDeviceTUIOClient(const std::string name, VRDataIndex& map )
+InputDeviceTUIOClient::InputDeviceTUIOClient(const std::string name, VRDataIndex& map ) : _name(name)
 {
 	int  port = map.getValue( name + "_Port" );
 	double xs = map.getValue( name + "_XScaleFactor" );
@@ -96,7 +96,7 @@ void InputDeviceTUIOClient::appendNewInputEventsSinceLastCall(std::vector<VREven
 			VRDataIndex di;
 			di.addData("id", *downLast_it);
 
-			events.push_back(VREvent("Touch_Cursor_Up", di));
+			events.push_back(VREvent(_name + "_Cursor_Up", di));
 			toErase.push_back(*downLast_it);
 		}
 	}
@@ -114,7 +114,7 @@ void InputDeviceTUIOClient::appendNewInputEventsSinceLastCall(std::vector<VREven
 			VRDataIndex di;
 			di.addData("id", tcur->getCursorID());
 			di.addData("pos", fromGlm(pos));
-			events.push_back(VREvent("Touch_Cursor_Down", di));
+			events.push_back(VREvent(_name + "_Cursor_Down", di));
 			_cursorsDown.insert(tcur->getCursorID());
 		}
 
@@ -125,7 +125,7 @@ void InputDeviceTUIOClient::appendNewInputEventsSinceLastCall(std::vector<VREven
 			di.addData("speed", tcur->getMotionSpeed());
 			di.addData("acc", tcur->getMotionAccel());
 			glm::dvec4 data = glm::dvec4(pos, tcur->getMotionSpeed(), tcur->getMotionAccel());
-			events.push_back(VREvent("Touch_Cursor_Move", di));
+			events.push_back(VREvent(_name + "_Cursor_Move", di));
 		}
 
 		// Can also access several other properties of cursors (speed, acceleration, path followed, etc.)
@@ -160,7 +160,7 @@ void InputDeviceTUIOClient::appendNewInputEventsSinceLastCall(std::vector<VREven
 		di.addData("ypos", ypos);
 		di.addData("angle", angle);
 
-		std::string name = "TUIO_Obj" + intToString(id);
+		std::string name = _name + "_Obj" + intToString(id);
 		events.push_back(VREvent(name, di));
 	}
 	_tuioClient->unlockObjectList();

@@ -34,7 +34,7 @@ class InputDeviceTUIOClient : public VRInputDevice
 public:
 
 #ifdef USE_TUIO
-	PLUGIN_API InputDeviceTUIOClient(int port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 );
+	PLUGIN_API InputDeviceTUIOClient( const std::string name, std::striint port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 );
 	PLUGIN_API InputDeviceTUIOClient( const std::string name, VRDataIndex& map );
 	PLUGIN_API virtual ~InputDeviceTUIOClient();
 	
@@ -46,9 +46,10 @@ private:
 	std::unordered_set<int>    _cursorsDown;
 	double      _xScale;
 	double      _yScale;
+	std::string _name;
 
 #else
-	PLUGIN_API InputDeviceTUIOClient(int port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 )
+	PLUGIN_API InputDeviceTUIOClient( const std::string name, int port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 )
 	{
 		MinVR::Logger::getInstance().assertMessage(false, "TUIO is currently unsupported. Set cmake option USE_TUIO to ON and recompile.");
 	}
