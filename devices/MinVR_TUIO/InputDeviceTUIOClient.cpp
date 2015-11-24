@@ -35,9 +35,9 @@ InputDeviceTUIOClient::InputDeviceTUIOClient(const std::string name, int port, d
 
 InputDeviceTUIOClient::InputDeviceTUIOClient(const std::string name, VRDataIndex& map ) : _name(name)
 {
-	int  port = map.getValue( name + "_Port" );
-	double xs = map.getValue( name + "_XScaleFactor" );
-	double ys = map.getValue( name + "_YScaleFactor" );
+	int  port = map.getValue( "port" );
+	double xs = map.getValue( "xScaleFactor" );
+	double ys = map.getValue( "yScaleFactor" );
 
 	_xScale = xs;
 	_yScale = ys;

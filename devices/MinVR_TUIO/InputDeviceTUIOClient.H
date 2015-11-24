@@ -34,7 +34,7 @@ class InputDeviceTUIOClient : public VRInputDevice
 public:
 
 #ifdef USE_TUIO
-	PLUGIN_API InputDeviceTUIOClient( const std::string name, std::striint port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 );
+	PLUGIN_API InputDeviceTUIOClient( const std::string name, int port = TUIO_PORT, double  xScaleFactor = 1.0, double  yScaleFactor=1.0 );
 	PLUGIN_API InputDeviceTUIOClient( const std::string name, VRDataIndex& map );
 	PLUGIN_API virtual ~InputDeviceTUIOClient();
 	
