@@ -135,7 +135,7 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 add_library ( ${PROJECT_NAME} SHARED ${HEADERFILES} ${SOURCEFILES} )
 add_dependencies(${PROJECT_NAME} vrpn VREvent)
-target_link_libraries(${PROJECT_NAME} ${VRPN_LIBRARY} ${All_LIB})
+target_link_libraries(${PROJECT_NAME} ${VRPN_LIBRARY} VREvent VRData ${All_LIB})
 
 #------------------------------------------
 # Install Target

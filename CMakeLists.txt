@@ -36,10 +36,14 @@ source_group("Header Files" FILES ${HEADERFILES})
 if (NOT MinVR_INCLUDE_DIRS)
 	set(MinVR_INCLUDE_DIRS $ENV{MinVR_DIR})
 endif()
+if (NOT MinVR_BINARY_DIRS)
+	set(MinVR_BINARY_DIRS $ENV{MinVR_DIR}/build/Release/lib)
+endif()
 #set(MinVR_DIR $ENV{MinVR_DIR})
 #find_package(MinVR COMPONENTS MVRCore AppKit_GLFW REQUIRED)
 message("${MinVR_INCLUDE_DIRS}")
 include_directories(${MinVR_INCLUDE_DIRS})
+link_directories(${MinVR_BINARY_DIRS})
 
 
 ############################################################
