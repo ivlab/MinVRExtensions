@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <VRInputDevices>
 	<VRInputDevice type="InputDeviceTUIOClient" name="Touch">
-		<port type="int">3333</acc>
+		<port type="int">3333</port>
 		<xScaleFactor type="double">1.0</id>
 		<yScaleFactor type="double">1.0</id>
 	</VRInputDevice>
