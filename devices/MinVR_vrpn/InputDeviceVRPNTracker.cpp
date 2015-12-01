@@ -274,7 +274,7 @@ void InputDeviceVRPNTracker::processEvent(const glm::dmat4 &vrpnEvent, int senso
 	}
 
 	VRDataIndex di;
-	di.addData("EventRoom", fromGlm(eventRoom));
+	di.addData("Transform", fromGlm(eventRoom));
 	_pendingEvents.push_back(VREvent(getEventName(sensorNum), di));
 }
 
