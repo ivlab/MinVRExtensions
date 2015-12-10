@@ -126,11 +126,11 @@ inline VRDoubleArray fromGlm(const glm::dmat4 & m) {
 
 InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, VRDataIndex& map)
 {
-	std::string vrpnname  = map.getValue( name + "_InputDeviceVRPNTrackerName" );
-	std::vector<std::string> events = map.getValue( name + "_EventsToGenerate" );
+	std::string vrpnname  = map.getValue( "Name" );
+	std::vector<std::string> events = map.getValue( "EventsToGenerate" );
 
-	double scale = map.getValue( name + "_TrackerUnitsToRoomUnitsScale" );
-	glm::dmat4 d2r = toGlm(map.getValue( name + "_DeviceToRoom" ));
+	double scale = map.getValue( "TrackerUnitsToRoomUnitsScale" );
+	glm::dmat4 d2r = toGlm(map.getValue( "DeviceToRoom" ));
 	
 	// orthonormalize
 	glm::dmat3 rot(d2r[0][0], d2r[0][1], d2r[0][2],
@@ -152,7 +152,7 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, VRDataIn
 
 	for (int  i = 0; i < events.size(); i++)
 	{
-		glm::dmat4 cf = toGlm(map.getValue(events[i] + "_PropToTracker"));
+		glm::dmat4 cf = toGlm(map.getValue("PropToTracker"));
 		glm::dmat3 rot(cf[0][0], cf[0][1], cf[0][2],
 				  cf[1][0], cf[1][1], cf[1][2],
 				  cf[2][0], cf[2][1], cf[2][2]);
@@ -168,7 +168,7 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, VRDataIn
 		cf[2][2] = rot[2][2];
 
 		p2t.push_back(cf);
-		glm::dmat4 cf2 = toGlm(map.getValue(events[i] + "_FinalOffset"));
+		glm::dmat4 cf2 = toGlm(map.getValue("FinalOffset"));
 		glm::dmat3 rot2(cf2[0][0], cf2[0][1], cf2[0][2],
 				  cf2[1][0], cf2[1][1], cf2[1][2],
 				  cf2[2][0], cf2[2][1], cf2[2][2]);
@@ -185,9 +185,9 @@ InputDeviceVRPNTracker::InputDeviceVRPNTracker( const std::string name, VRDataIn
 		fo.push_back(cf2);
 	}
 
-	bool wait          = ((int)map.getValue( name + "_WaitForNewReportInPoll")) == 1;
-	bool convertLHtoRH = ((int)map.getValue( name + "_ConvertLHtoRH")) == 1;
-	bool ignoreZeroes  = ((int)map.getValue( name + "_IgnoreZeroes")) == 1;
+	bool wait          = ((int)map.getValue( "WaitForNewReportInPoll")) == 1;
+	bool convertLHtoRH = ((int)map.getValue( "ConvertLHtoRH")) == 1;
+	bool ignoreZeroes  = ((int)map.getValue( "IgnoreZeroes")) == 1;
 
 	//MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNTracker (") + vrpnname + ")", "Tag", "MinVR Core");
 	std::cout << std::string("Creating new InputDeviceVRPNTracker (") + vrpnname + ")" << std::endl;

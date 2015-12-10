@@ -88,8 +88,8 @@ InputDeviceVRPNAnalog::InputDeviceVRPNAnalog(const std::string &vrpnAnalogDevice
 
 InputDeviceVRPNAnalog::InputDeviceVRPNAnalog(const std::string name, VRDataIndex& map)
 {
-	std::string  vrpnname = map.getValue( name + "_InputDeviceVRPNAnalogName" );
-	_eventNames   = map.getValue( name + "_EventsToGenerate" );
+	std::string  vrpnname = map.getValue( "Name" );
+	_eventNames   = map.getValue( "EventsToGenerate" );
 
 	//MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNAnalog (") + vrpnname + ")", "Tag", "MinVR Core");
 	std::cout << std::string("Creating new InputDeviceVRPNAnalog (") + vrpnname + ")" << std::endl;

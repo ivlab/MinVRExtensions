@@ -95,8 +95,9 @@ void InputDeviceTUIOClient::appendNewInputEventsSinceLastCall(std::vector<VREven
 
 			VRDataIndex di;
 			di.addData("id", *downLast_it);
+			di.addData("action", "Up");
 
-			events.push_back(VREvent(_name + "_Cursor_Up", di));
+			events.push_back(VREvent(_name, di));
 			toErase.push_back(*downLast_it);
 		}
 	}
@@ -114,7 +115,8 @@ void InputDeviceTUIOClient::appendNewInputEventsSinceLastCall(std::vector<VREven
 			VRDataIndex di;
 			di.addData("id", tcur->getCursorID());
 			di.addData("pos", fromGlm(pos));
-			events.push_back(VREvent(_name + "_Cursor_Down", di));
+			di.addData("action", "Down");
+			events.push_back(VREvent(_name, di));
 			_cursorsDown.insert(tcur->getCursorID());
 		}
 
@@ -124,8 +126,9 @@ void InputDeviceTUIOClient::appendNewInputEventsSinceLastCall(std::vector<VREven
 			di.addData("pos", fromGlm(pos));
 			di.addData("speed", tcur->getMotionSpeed());
 			di.addData("acc", tcur->getMotionAccel());
+			di.addData("action", "Move");
 			glm::dvec4 data = glm::dvec4(pos, tcur->getMotionSpeed(), tcur->getMotionAccel());
-			events.push_back(VREvent(_name + "_Cursor_Move", di));
+			events.push_back(VREvent(_name, di));
 		}
 
 		// Can also access several other properties of cursors (speed, acceleration, path followed, etc.)
@@ -159,8 +162,9 @@ void InputDeviceTUIOClient::appendNewInputEventsSinceLastCall(std::vector<VREven
 		di.addData("xpos", xpos);
 		di.addData("ypos", ypos);
 		di.addData("angle", angle);
+		di.addData("action", "Obj");
 
-		std::string name = _name + "_Obj" + intToString(id);
+		std::string name = _name;
 		events.push_back(VREvent(name, di));
 	}
 	_tuioClient->unlockObjectList();
