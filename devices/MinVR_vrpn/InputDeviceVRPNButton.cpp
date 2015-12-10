@@ -86,8 +86,8 @@ InputDeviceVRPNButton::InputDeviceVRPNButton(const std::string &vrpnButtonDevice
 
 InputDeviceVRPNButton::InputDeviceVRPNButton(const std::string name, VRDataIndex& map)
 {
-	std::string vrpnname = map.getValue( name + "_InputDeviceVRPNButtonName" );
-	_eventNames   = map.getValue( name + "_EventsToGenerate" );
+	std::string vrpnname = map.getValue( "Name" );
+	_eventNames   = map.getValue( "EventsToGenerate" );
 
 	//MinVR::Logger::getInstance().log(std::string("Creating new InputDeviceVRPNButton (") + vrpnname + ")", "Tag", "MinVR Core");
 	std::cout << std::string("Creating new InputDeviceVRPNButton (") + vrpnname + ")" << std::endl;
@@ -122,12 +122,8 @@ void InputDeviceVRPNButton::sendEvent(int buttonNumber, bool down, const TimeSta
 	std::string ename = getEventName(buttonNumber);
 	VRDataIndex di;
 	di.addData("id", buttonNumber);
-	if (down) {
-		_pendingEvents.push_back(VREvent(ename + "_down", di));
-	}
-	else {
-		_pendingEvents.push_back(VREvent(ename + "_up", di));
-	}
+	di.addData("action", (int)down);
+	_pendingEvents.push_back(VREvent(ename, di));
 }
 
 void InputDeviceVRPNButton::appendNewInputEventsSinceLastCall(std::vector<VREvent> &events)
